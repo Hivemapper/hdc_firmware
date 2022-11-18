@@ -1,0 +1,6 @@
+config BR2_PACKAGE_ONBOARD_UPDATER
+	bool "onboard-updater"
+  select BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_TRANSITIONS
+	help
+	  The onboard updater that manages the OTAU.

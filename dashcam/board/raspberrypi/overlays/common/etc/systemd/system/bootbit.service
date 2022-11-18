@@ -1,0 +1,18 @@
+[Unit]
+Description=Dashcam Boot BIT
+
+# The Boot BIT is written to not need strict ordering requirements.  In fact
+# it would be a bad idea to "require" any sort of prereq since we want the BIT
+# to run no matter what.  In terms of weak ordering, generally we want to start
+# near the end of the boot process but we allow plenty of time for the monitored
+# processes to come online.
+After=rauc.service
+After=onboard-updater.service
+After=camera-api.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/dashcam/bin/bootbit.sh
+
+[Install]
+WantedBy=multi-user.target

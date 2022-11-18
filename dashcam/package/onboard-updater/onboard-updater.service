@@ -1,0 +1,13 @@
+[Unit]
+Description=Onboard Updater
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/onboardupdater
+Restart=always
+User=dashcam
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,8 @@
+config BR2_PACKAGE_GNSS_LOGGER
+	bool "gpsd-logger"
+  select BR2_PACKAGE_GPSD_AND_CONFIG
+  select BR2_PACKAGE_BOOST
+  select BR2_PACKAGE_BOOST_PROGRAM_OPTIONS
+  select BR2_PACKAGE_JSON_FOR_MODERN_CPP
+	help
+	  System GNSS logger

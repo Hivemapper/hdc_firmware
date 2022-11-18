@@ -1,0 +1,4 @@
+path = /mnt/data/imu
+extension = json
+maxSize = 10000
+logDuration = 60

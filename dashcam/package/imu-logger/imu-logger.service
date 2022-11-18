@@ -1,0 +1,12 @@
+[Unit]
+Description=IMU Logger
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/dashcam/bin
+ExecStartPre=/bin/mkdir -p /mnt/data/imu
+ExecStart=/opt/dashcam/bin/imu-logger -c /opt/dashcam/imu-logger-config.txt
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,5 @@
+config BR2_PACKAGE_CAMERA_API
+	bool "camera-api"
+	select BR2_PACKAGE_HOST_ZIG_X86_86
+	help
+	  The API portion of the Capable camera firmware.

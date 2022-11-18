@@ -1,0 +1,10 @@
+[Unit]
+Description=Set Hostname
+
+[Service]
+Type=oneshot
+ExecStart=/opt/dashcam/bin/set_hostname.sh
+
+[Install]
+# We want to set the hostname before we startup networking I think.
+WantedBy=network-pre.target

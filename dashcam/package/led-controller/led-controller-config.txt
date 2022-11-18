@@ -1,0 +1,3 @@
+path = /tmp/
+fileName = led.json
+refreshRate = 100

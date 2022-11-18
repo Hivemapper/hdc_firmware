@@ -1,0 +1,4 @@
+config BR2_PACKAGE_LORAWAN_LOGGER
+	bool "lorawan-logger"
+	help
+	  LoraWan SPI support

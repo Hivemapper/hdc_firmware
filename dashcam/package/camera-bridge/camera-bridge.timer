@@ -1,0 +1,8 @@
+[Unit]
+Description=Timer to start camera-bridge
+
+[Timer]
+OnStartupSec=60sec
+
+[Install]
+WantedBy=timers.target

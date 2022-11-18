@@ -1,0 +1,5 @@
+# https://buildroot.org/downloads/manual/manual.html#makeuser-syntax
+# Use * for password to disable any login.
+# Use - for home dir since this user doesn't need a home dir.
+# Add to the sudo group so they can execute "sudo reboot".
+dashcam 1000 dashcam 1000 * - /bin/sh dashcam,sudo dashcam user account

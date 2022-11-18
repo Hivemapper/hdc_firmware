@@ -1,0 +1,4 @@
+config BR2_PACKAGE_HOST_ZIG_X86_86
+	bool "zig-x86-64-host"
+	help
+	  Zig for the x86_64 host.

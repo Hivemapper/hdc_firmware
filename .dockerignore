@@ -1,0 +1,7 @@
+buildroot/dl
+.buildroot-ccache
+output
+**/.git
+**/.vscode
+**/.venv
+**/venv

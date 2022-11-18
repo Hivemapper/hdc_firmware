@@ -1,0 +1,9 @@
+config BR2_PACKAGE_GPSD_AND_CONFIG
+	bool "gpsd-and-config"
+  select BR2_PACKAGE_GPSD
+  select BR2_PACKAGE_GPSD_CLIENT_DEBUG
+  select BR2_PACKAGE_GPSD_OLDSTYLE
+  select BR2_PACKAGE_GPSD_NMEA
+  select BR2_PACKAGE_GPSD_UBX
+	help
+	  Add GPSD and configuration for attached device

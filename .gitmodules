@@ -1,0 +1,6 @@
+[submodule "buildroot"]
+	path = buildroot
+	url = https://github.com/buildroot/buildroot.git
+[submodule "dashcampublicpatches"]
+	path = dashcampublicpatches
+	url = git@bitbucket.org:chr1sniessl/dashcampublicpatches.git

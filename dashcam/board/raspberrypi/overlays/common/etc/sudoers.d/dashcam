@@ -1,0 +1,2 @@
+# dashcam user needs to reboot from the Onboard Updater app.
+dashcam ALL = NOPASSWD: /sbin/reboot

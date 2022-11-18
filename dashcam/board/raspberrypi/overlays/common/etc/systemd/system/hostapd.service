@@ -1,0 +1,12 @@
+[Unit]
+Description=hostapd Service Wrapper
+After=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/hostapd.pid
+ExecStart=/sbin/hostapd -B -P /run/hostapd.pid /etc/hostapd.conf
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

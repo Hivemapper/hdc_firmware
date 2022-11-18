@@ -1,0 +1,12 @@
+[Unit]
+Description=Camera Bridge
+After=network.target
+
+[Service]
+# TODO(chris.shaw): start with root and change back to dashcam when we have correct groups/permissions.
+User=root
+WorkingDirectory=/opt/dashcam/bin
+ExecStartPre=/bin/mkdir -p /tmp/recording/pic
+Environment="LD_LIBRARY_PATH=/opt/dashcam/lib"
+ExecStart=sh /opt/dashcam/bin/bridge.sh
+Restart=always

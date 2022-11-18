@@ -1,0 +1,2 @@
+OPTIONS=-n -s 38400
+DEVICES=/dev/ttyAMA1

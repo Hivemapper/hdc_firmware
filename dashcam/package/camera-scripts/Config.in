@@ -1,0 +1,4 @@
+config BR2_PACKAGE_CAMERA_SCRIPTS
+	bool "camera-scripts"
+	help
+	  General utility scripts

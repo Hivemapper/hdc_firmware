@@ -1,0 +1,17 @@
+[Unit]
+Description=Expand data partition on startup
+
+Before=rauc.service
+Before=onboard-updater.service
+Before=camera-node.service
+Before=camera-bridge.service
+Before=imu-logger.service
+Before=gnss-logger.service
+Before=lorawan-logger.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/dashcam/bin/storage/resize-data-partition.sh
+
+[Install]
+WantedBy=multi-user.target

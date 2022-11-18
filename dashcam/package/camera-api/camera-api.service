@@ -1,0 +1,15 @@
+[Unit]
+Description=Camera API
+After=network.target
+
+[Service]
+# TODO(chris.shaw): start with root and change back to dashcam when we have correct groups/permissions.
+User=root
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+WorkingDirectory=/opt/dashcam/bin
+# TODO(chris.shaw): we may want to call a helper script instead of the executable here.
+ExecStart=/opt/dashcam/bin/capable_camera_firmware
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

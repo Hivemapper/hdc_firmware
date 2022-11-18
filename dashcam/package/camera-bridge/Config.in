@@ -1,0 +1,11 @@
+config BR2_PACKAGE_CAMERA_BRIDGE
+	bool "camera-bridge"
+  select BR2_PACKAGE_BOOST
+  select BR2_PACKAGE_BOOST_PROGRAM_OPTIONS
+  select BR2_PACKAGE_BOOST_FILESYSTEM
+  select BR2_PACKAGE_LIBCAMERA
+  select BR2_PACKAGE_LIBCAMERA_PIPELINE_RASPBERRYPI
+  select BR2_PACKAGE_JPEG_TURBO
+  select BR2_PACKAGE_JSON_FOR_MODERN_CPP
+	help
+	  The C++ portion of the Capable camera firmware which bridges libcamera.

@@ -1,0 +1,20 @@
+[Unit]
+Description=txpower Service Wrapper
+# hostapd is what brings the interface up and there's no harm in also
+# ordering on the device itself.
+After=hostapd.service sys-subsystem-net-devices-wlan0.device
+Requires=hostapd.service sys-subsystem-net-devices-wlan0.device
+
+[Service]
+# So there is a bit of a race in trying to set txpower to quickly on the
+# device.  By making it "idle" that puts in a soft delay on the execution
+# of the iwconfig command.
+Type=idle
+ExecStart=/sbin/iwconfig wlan0 txpower 0
+# As a last resort to any ordering problems we can retry the txpower command
+# on failure.
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

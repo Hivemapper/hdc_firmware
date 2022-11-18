@@ -1,0 +1,16 @@
+[Unit]
+Description=Camera Node
+After=network.target
+
+[Service]
+
+User=root
+WorkingDirectory=/opt/dashcam/bin
+ExecStart=sh /opt/dashcam/bin/camera_node.sh
+Restart=always
+
+StandardOutput=append:/mnt/data/camera-node.log
+StandardError=append:/mnt/data/camera-node.log
+
+[Install]
+WantedBy=multi-user.target

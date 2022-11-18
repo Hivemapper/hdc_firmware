@@ -1,0 +1,11 @@
+[Unit]
+Description=LoraLAN Logger
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/dashcam/bin
+ExecStart=/opt/dashcam/bin/lorawan-logger @/opt/dashcam/cfg/lorawan.conf
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

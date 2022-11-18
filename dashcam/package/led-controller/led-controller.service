@@ -1,0 +1,11 @@
+[Unit]
+Description=LED Controller
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/dashcam/bin
+ExecStart=/opt/dashcam/bin/led-controller -c /opt/dashcam/led-controller-config.txt
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

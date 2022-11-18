@@ -1,0 +1,71 @@
+# If you change this file don't forget to rebuild the rpi-firmware package since
+# that is how this file gets installed to the target directory.
+# Note that this file is used for both 32-bit and 64-bit configurations but is
+# modified in our post-build script.
+
+start_file=start4.elf
+fixup_file=fixup4.dat
+
+kernel=u-boot.bin
+
+# Disable overscan assuming the display supports displaying the full resolution
+# If the text shown on the screen disappears off the edge, comment this out
+disable_overscan=1
+
+gpu_mem=256
+gpu_mem_256=100
+gpu_mem_512=100
+gpu_mem_1024=100
+
+# fixes rpi (3B, 3B+, 3A+, 4B and Zero W) ttyAMA0 serial console
+# {chris.shaw}
+# Yes, we seem to need this on the CM4IO as well.  This moves bluetooth to the
+# miniuart and makes UART0 the primary UART that the ttyAMA0 serial console runs
+# on.
+# https://www.raspberrypi.com/documentation/computers/configuration.html#uarts-and-device-tree
+
+dtoverlay=miniuart-bt
+enable_uart=1
+
+# IMU
+dtoverlay=spi0-1cs
+
+# LORA
+dtoverlay=spi1-1cs,cs0_pin=18
+
+# GNSS configurations
+dtoverlay=uart5
+gpio=5=op,dl
+gpio=22=op,dh
+
+# General device configurations
+dtparam=i2c_arm=on
+dtparam=spi=on
+
+# Camera configurations
+dtoverlay=vc4-fkms-v3d,cma-512
+max_framebuffers=2
+dtoverlay=imx477
+
+
+# Enables the hardware watchdog that will reboot the system after 15 seconds
+# in case of a kernel panic.
+dtparam=watchdog=on
+
+# This is commented for 32-bit but is uncommented by our post-build script for
+# 64-bit.  As such, don't delete this.
+#arm_64bit=1
+
+#Set minimum frequency so our image bus can push 10 fps
+#Also overclock the eMMC so that we can write as close to 10 fps to it.
+arm_freq_min=1100
+#init_emmc_clock=300000000
+
+[cm4]
+# {RPi} 
+# Enable host mode on the 2711 built-in XHCI USB controller.
+# This line should be removed if the legacy DWC2 controller is required
+# (e.g. for USB device mode) or if USB support is not required.
+# {chris.shaw}
+# By enabling this we can use a USB keyboard.
+otg_mode=1

@@ -1,0 +1,12 @@
+[Unit]
+Description=USB Updater On Start
+After=rauc.service
+After=systemd-timedated.service
+After=systemd-timesyncd.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/dashcam/bin/usb_update.sh
+
+[Install]
+WantedBy=multi-user.target
