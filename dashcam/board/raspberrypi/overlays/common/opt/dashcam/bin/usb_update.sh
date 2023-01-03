@@ -30,20 +30,19 @@ for INDEX in $(seq $START_INDEX $END_INDEX); do
         echo "Found more than one update file... Unable to update."
         break  #If things are off, we don't want to continue 
     fi
-    echo "Found one update file."
+    echo "Update file exist, moving to validation"
 
 
     UPDATE_FILE_SEARCH=$(ls -1 $SEARCH_PATH/*.raucb)
     UPDATE_FILE_COUNT=$(echo $UPDATE_FILE_SEARCH | wc -l)
 
     # Get date from update certificate
-    echo "Getting cert date"
+    echo "Getting cert date and updating date to fudge the cert time"
     CERT_DATE=$(openssl x509 -startdate -noout -in $CERT_PATH)
     TRIM_DATE=$(echo "$CERT_DATE" | cut -d= -f2)
     FORMAT_DATE=$(date -d "$TRIM_DATE" -D "%b %d %T %Y" -I)
 
     # Update the system time based on the cert time
-    echo "Updating date."
     timedatectl set-ntp 0
     sleep 1
     timedatectl set-time $FORMAT_DATE
@@ -54,12 +53,14 @@ for INDEX in $(seq $START_INDEX $END_INDEX); do
     # Get the hashes for rootfs and updates
     BOOT_HASH=$(python $SCRIPT_PATH/get_boot_hash.py)
     UPDATE_HASH=$(python $SCRIPT_PATH/get_update_hash.py $UPDATE_FILE_SEARCH)
-    echo "Checking boot and update hashes"
-    echo "Boot hash: $BOOT_HASH"
-    echo "Update hash: $UPDATE_HASH"
+    echo "Validating boot and update hashes"
+    echo "Boot hash: $BOOT_HASH \n Update hash: $UPDATE_HASH"
+
     if [ "$BOOT_HASH" == "" ] && [ "$UPDATE_HASH" == "" ]; then 
         echo "Failed to get a hash for comparison"
         break
+
+    #Important. This prevents an update loop if the USB device is left attached. 
     if [ "$BOOT_HASH" == "$UPDATE_HASH" ]; then
         echo "Update image is the same as the one already installed."
         break 
