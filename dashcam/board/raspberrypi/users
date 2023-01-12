@@ -3,3 +3,4 @@
 # Use - for home dir since this user doesn't need a home dir.
 # Add to the sudo group so they can execute "sudo reboot".
 dashcam 1000 dashcam 1000 * - /bin/sh dashcam,sudo dashcam user account
+hdc_admin 1001 hdc_admin 1001 hdc_admin /tmp /home/hdc_admin hdc_admin,sudo Basic users for admin 
