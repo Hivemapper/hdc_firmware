@@ -3,4 +3,4 @@
 	url = https://github.com/buildroot/buildroot.git
 [submodule "dashcampublicpatches"]
 	path = dashcampublicpatches
-	url = https://github.com/Hivemapper/hdc_firmware.git
+	url = https://github.com/Hivemapper/dashcam_public_patches.git
