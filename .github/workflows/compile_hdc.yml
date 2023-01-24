@@ -31,7 +31,7 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: buildroot-hdc
-        path: output/images/firmware_update.raucb
+        path: output/firmware_update.raucb
     
   
   
