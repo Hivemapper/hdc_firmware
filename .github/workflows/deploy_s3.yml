@@ -12,10 +12,8 @@ jobs:
       - name: Download artifact from build
         uses: bettermarks/action-artifact-download@0.3.0
         with:
-          repo: hivemapper/hdc_firmware
-          token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: buildroot-hdc
-          wait_seconds: 60 
+          wait_seconds: 30
       - run: |
           ls -al
           unzip buildroot-hdc.zip
