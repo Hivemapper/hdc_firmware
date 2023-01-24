@@ -17,7 +17,7 @@ jobs:
           wait_seconds: 30
       - run: |
           ls -al
-          unzip buildroot-hdc.zip
+          unzip buildroot-hdc
           ls -al 
       - uses: shallwefootball/s3-upload-action@master
         with:
