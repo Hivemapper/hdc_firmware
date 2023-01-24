@@ -9,7 +9,6 @@ jobs:
     permissions:
       deployments: write
     steps:
-      - uses: actions/checkout@master
       - name: Download artifact from build
         uses: bettermarks/action-artifact-download@0.3.0
         with:
