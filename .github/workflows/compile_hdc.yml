@@ -25,7 +25,7 @@ jobs:
     - name: Copy target
       run: |
         pwd
-        ln -s ./images/update.raucb ../hdc_firmware/output/firmware_update.raucb
+        cp ../output/images/update.raucb ./output/firmware_update.raucb
     - name : Upload 
       uses: actions/upload-artifact@master
       with:
