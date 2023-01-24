@@ -24,7 +24,8 @@ jobs:
         make 
     - name: Copy target
       run: |
-        ln -s ../images/update.raucb ../hdc_firmware/output/firmware_update.raucb
+        pwd
+        ln -s ./images/update.raucb ../hdc_firmware/output/firmware_update.raucb
     - name : Upload 
       uses: actions/upload-artifact@master
       with:
