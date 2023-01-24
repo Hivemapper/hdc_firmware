@@ -25,6 +25,7 @@ jobs:
     - name: Copy target
       run: |
         pwd
+        mkdir output
         cp ../output/images/update.raucb ./output/firmware_update.raucb
     - name : Upload 
       uses: actions/upload-artifact@master
