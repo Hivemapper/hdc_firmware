@@ -23,7 +23,7 @@ jobs:
         cd ../output
         make 
     - name: Copy target
-    - run: |
+      run: |
         ln -s ../output/images/update.raucb ./output/firmware_update.raucb
     - name : Upload 
       uses: actions/upload-artifact@master
