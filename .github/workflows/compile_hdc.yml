@@ -22,12 +22,14 @@ jobs:
       run: |
         cd ../output
         make 
-        ln -s . ../hdc_firmware/output
+    - name: Copy target
+    - run: |
+        ln -s ../output/images/update.raucb ./output/firmware_update.raucb
     - name : Upload 
       uses: actions/upload-artifact@master
       with:
         name: buildroot-hdc
-        path: output/images/update.raucb
+        path: output/images/firmware_update.raucb
     
   
   
