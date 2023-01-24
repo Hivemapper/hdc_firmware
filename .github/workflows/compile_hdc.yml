@@ -22,7 +22,7 @@ jobs:
       run: |
         cd ../output
         make 
-        ln -s . ./hdc_firmware/output
+        ln -s . ../hdc_firmware/output
     - name : Upload 
       uses: actions/upload-artifact@master
       with:
