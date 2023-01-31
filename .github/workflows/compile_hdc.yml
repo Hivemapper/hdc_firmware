@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: compile_hdc
 
 on:
   workflow_dispatch:
@@ -15,6 +15,15 @@ jobs:
       with:
        token: ${{ secrets.CLASSIC_TOKEN }}
        submodules: recursive
+    - uses: bettermarks/action-artifact-download@0.3.0
+      with:
+          token: ${{ secrets.CLASSIC_TOKEN }}
+          repo: hivemapper/odc-api
+          artifact_name: odc-api
+          wait_seconds: 30
+    - run: |
+        unzip odc-api
+        mv dashcam-api.js  dashcam/package/camera-node/files/
     - name: configure
       run: |
         make -s -C buildroot/ BR2_EXTERNAL=../dashcam O=../../output raspberrypicm4io_64_dev_dashcam_defconfig
@@ -24,7 +33,6 @@ jobs:
         make 
     - name: Copy target
       run: |
-        pwd
         mkdir output
         cp ../output/images/update.raucb ./output/firmware_update.raucb
     - name : Upload 
