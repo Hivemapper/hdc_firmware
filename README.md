@@ -316,3 +316,23 @@ interactive bash session.
 
 While there is a configuration for 64-bit (aarch64), it is not fully supported right now due to
 the fact that the Zig component of the camera software does not build with a 64-bit toolchain.
+
+### Github CI/CD
+
+This project contains a github workflow to allow the automated build and deployment of this project to S3 as well as publishing a github artifact. 
+
+The build process requires a self hosted runner. The self hosted runner for this repository is hosted in the Hivemapper AWS instance. More details about self hosted runners are available in the github documentation. The motivation for the selfhosted runner is ability to reuse build artifacts between runs; for this firmware this is a critical time savings of 4+ hours.
+
+To effectivly reusework, the compilation process must take place outside of the source tree in github actions. This is a side effect of github actions removing any folders contained in gitignore. The local build process directs the user to place a folder named output inside the source tree for compilation. That folder ("./output") is contained in the gitignore and is therefore removed at each build. The github workflow we have built creates a folder named output outside of the source tree as previously mentioned. It therefore may be messacary to remove the output folder or run make clean manually to deal with certain build situations or problems. 
+
+Details about workflow runner installation location on the EC2 instance can be found in the workflow output. 
+
+At the end of the workflow we publish the build artifact to two locations.
+1) S3
+2) Github's internal artifact repository
+
+Requirements:
+- A running EC2 instance witht he github workflow running API installed as a service
+- Docker installed and running on the EC2 instance with proper permission for the github workflow service process owner
+- An S3 Bucket installed with the proper permissions(ACL)
+- Github repo secrets set up to allow for push to S3
