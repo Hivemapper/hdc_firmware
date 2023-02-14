@@ -31,16 +31,13 @@ jobs:
         run: |
           cd ../output
           make clean
-      - name: Compile
-        run: |
-          cd ../output
           make
       - name: Copy target
         run: |
-          mkdir output
-          cp ../output/images/update.raucb ./output/firmware_update.raucb
+          mkdir artifacts
+          cp ../output/images/update.raucb ./artifacts/firmware_update.raucb
       - name: Upload
         uses: actions/upload-artifact@master
         with:
           name: buildroot-hdc
-          path: output/firmware_update.raucb
+          path: artifacts/firmware_update.raucb
