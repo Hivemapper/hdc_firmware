@@ -30,7 +30,6 @@ jobs:
       - name: Compile
         run: |
           cd ../output
-          make clean
           make
       - name: Copy target
         run: |
