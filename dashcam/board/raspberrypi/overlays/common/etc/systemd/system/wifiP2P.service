@@ -1,0 +1,12 @@
+[Unit]
+Description=WiFi P2P auto connector
+After=network.target dnsmasq.service dhcpcd.service
+
+[Service]
+Type=simple
+PIDFile=/run/wifiP2P.pid
+ExecStart=/opt/dashcam/bin/network/wifiP2Pdaemon.sh
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

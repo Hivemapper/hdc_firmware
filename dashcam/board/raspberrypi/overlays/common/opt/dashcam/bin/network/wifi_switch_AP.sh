@@ -4,7 +4,9 @@
 # the original Access point configuration.
 
 echo "Stopping services"
-killall -9 wpa_supplicant
+systemctl stop wifiP2P
+sleep 1
+systemctl stop wpa_supplicant
 sleep 1
 systemctl stop hostapd
 sleep 1

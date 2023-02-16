@@ -8,6 +8,7 @@ Before=camera-bridge.service
 Before=imu-logger.service
 Before=gnss-logger.service
 Before=lorawan-logger.service
+Before=wifiman.service
 
 [Service]
 Type=oneshot

@@ -1,0 +1,14 @@
+[Unit]
+Description=WPA supplicant
+Before=network.target systemd-networkd.service
+After=wifiman.service dbus.service
+Wants=network.target
+
+[Service]
+Type=simple
+PIDFile=/run/wpa_supplicant.pid
+ExecStart=/sbin/wpa_supplicant -Dnl80211 -iwlan0 -c/etc/wpa_supplicant.conf
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

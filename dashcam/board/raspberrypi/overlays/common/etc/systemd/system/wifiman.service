@@ -1,0 +1,11 @@
+[Unit]
+Description=WiFi AP/P2P Service Manager
+Before=systemd-networkd.service wpa_supplicant.service
+After=expand-data.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/dashcam/bin/network/wifiman.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -4,6 +4,8 @@
 # Note you will still need to establish a wpa_cli connection
 
 echo "Stopping services"
+systemctl stop wifiP2P
+sleep 1
 systemctl stop wpa_supplicant
 sleep 1
 systemctl stop hostapd
@@ -17,17 +19,16 @@ echo "Copying configurations over"
 cp /opt/dashcam/cfg/P2P_dhcpcd.conf /etc/dhcpcd.conf
 cp /opt/dashcam/cfg/P2P_dnsmasq.conf /etc/dnsmasq.conf
 
-echo "Starting wpa_supplicant in background"
-wpa_supplicant -Dnl80211 -iwlan0 -c/etc/wpa_supplicant.conf &
-sleep 3
-
 echo "Restarting network services"
+systemctl restart wpa_supplicant
+sleep 1
 systemctl restart systemd-networkd
 sleep 1
 systemctl restart dhcpcd
 sleep 1
 systemctl restart dnsmasq
 sleep 1
+systemctl restart wifiP2P
 
 echo "Updaing network mode file"
 rm /opt/dashcam/network-mode.txt

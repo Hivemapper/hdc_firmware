@@ -41,7 +41,9 @@ if [ $connected -eq 1 ]
 then  
   echo "Connected to $con_addr"
   touch /tmp/CONNECT_SUCCESS
+  exit 0
 else
   echo "Failed to find a connection"
   touch /tmp/CONNECT_FAIL
+  exit 1
 fi

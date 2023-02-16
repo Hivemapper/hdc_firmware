@@ -1,5 +1,6 @@
 [Unit]
 Description=USB Updater On Start
+Before=wifiman.service
 After=rauc.service
 After=systemd-timedated.service
 After=systemd-timesyncd.service

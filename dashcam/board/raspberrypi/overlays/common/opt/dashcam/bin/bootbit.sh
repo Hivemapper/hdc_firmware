@@ -132,23 +132,33 @@ if [ "${IGNORE_CCF}" -eq 0 ]; then
 fi
 
 # The wlan0 interface is the last thing to come up.  So we'll give it a bit more time.
-ITER=0
-NUM_ITERS=10
-while true; do
+# 2023-02-01 CTN: Commented out this whole check. 
+# Reasons: 
+# 1. IP Addresses
+# 2. WiFi is checked on a software build before deployment on SIL, if it doesn't pass
+#    we avoid distributing it and the SIL can be reflashed easily on fails.
+# 3. This only helps recover a software-based wifi issue. Hardware issues would not
+#    be recoverable with this system.
+
+#ITER=0
+#NUM_ITERS=10
+#while true; do
   # There may be a better way of testing this but this seems sufficient.  If hostapd
   # didn't bring up the interface it won't have an IP address on wlan0.
-  ip addr show wlan0 | grep ${WIFI_IP} > /dev/null 2>&1
-  [ "$?" -eq 0 ] && break
+#  ip addr show wlan0 | grep ${WIFI_IP} > /dev/null 2>&1
+#  [ "$?" -eq 0 ] && break
 
-  ITER=$((ITER + 1))
+#  ITER=$((ITER + 1))
 
-  [ ${ITER} -ge ${NUM_ITERS} ] && fail "wlan0 is not up with expected IP address"
+#  [ ${ITER} -ge ${NUM_ITERS} ] && fail "wlan0 is not up with expected IP address"
 
-  sleep 1
-done
+#  sleep 1
+#done
 
-# Test the onboard updater is answering requests on the wifi interface.
-wget http://${WIFI_IP}:${OU_PORT}/status --spider > /dev/null 2>&1
+# Test the onboard updater is answering requests.
+# We use localhost because we may end up using a different address
+# negotiated by wifi-direct.
+wget http://127.0.0.1:${OU_PORT}/status --spider > /dev/null 2>&1
 [ "$?" -ne 0 ] && fail "cannot get status from onboard updater"
 
 # Test that the persistent data partition is mounted.

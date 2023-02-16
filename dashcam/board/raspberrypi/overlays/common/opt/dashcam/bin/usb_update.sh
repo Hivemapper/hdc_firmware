@@ -17,8 +17,16 @@ for INDEX in $(seq $START_INDEX $END_INDEX); do
     echo "Searching for update direcory in \"$BASE_DIR\""
     echo $SEARCH_PATH
     if [ -d $SEARCH_PATH ]; then
-        echo "Found update directory! Looking for update file..."
-
+        echo "Found update directory! Looking for wifi recovery or update file..."
+        
+        # Check for a wifi.cfg file, and if so, copy it over
+        WIFI_FILE="$SEARCH_PATH/wifi.cfg"
+        if [ -e "$WIFI_FILE" ]; then
+            echo "Found wifi configuration file. Copying it over."
+            cp $WIFI_FILE /mnt/data/wifi.cfg
+            sync
+        fi
+        
         # Validate there isn't more than one update bundle
         UPDATE_FILE_SEARCH=$(ls -1 $SEARCH_PATH/*.raucb)
         UPDATE_FILE_COUNT=$(echo $UPDATE_FILE_SEARCH | wc -l)

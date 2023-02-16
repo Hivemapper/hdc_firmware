@@ -1,6 +1,6 @@
 [Unit]
 Description=hostapd Service Wrapper
-After=network.target
+After=network.target wifiman.service
 
 [Service]
 Type=simple
