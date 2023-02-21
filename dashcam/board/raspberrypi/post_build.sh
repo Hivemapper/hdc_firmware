@@ -3,7 +3,7 @@
 # This is the semantic version of the software.  You should change this when
 # producing production builds after a change.  The way this is written though,
 # the builder could set the environment variable and this won't override it.
-[[ -z "${SEMANTIC_VERSION}" ]] && SEMANTIC_VERSION="0.23.01.03-beta Carpenter"
+[[ -z "${SEMANTIC_VERSION}" ]] && SEMANTIC_VERSION="0.23.02.16-beta Drone"
 
 set -eu
 

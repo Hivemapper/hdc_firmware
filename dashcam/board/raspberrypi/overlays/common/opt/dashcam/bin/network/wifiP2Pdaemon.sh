@@ -63,7 +63,7 @@ wpa_cli -i wlan0 set config_methods
 sleep 1
 
 interface=$(ip link | grep -E -o 'p2p-wlan0-[0-9]+')
-if [ ! interface="" ]
+if [ "$interface" != "" ]
 then
   wpa_cli -i wlan0 p2p_group_remove $interface
   sleep 1
@@ -129,6 +129,49 @@ if [ $connected -eq 1 ]
 then  
   echo "Connected to $device_name"
   touch /tmp/CONNECT_SUCCESS
+  #STEP 4: Maintain the watchdog, and exit once we've failed
+  sleep 15
+  Watchdog_count=1
+  IP_result=1
+  while [ $IP_result -eq 1 ]
+  do
+    echo "Watchdog count: $Watchdog_count"
+    Watchdog_count=`expr $Watchdog_count + 1`
+    ping_result=0
+    response_rate="0%"
+
+    interface=$(ip link | grep -E -o 'p2p-wlan0-[0-9]+')
+    if [ "$interface" = "" ]
+    then
+      echo "Interface:\'$interface\'"
+      echo "Wifi-P2P group removed. Exiting"
+      break
+    fi
+    
+    devIPLine=$(arp -i $interface | grep -E -o "192.168.0.[01]?[0-9]?[0-9]?")
+    if [ -n "$devIPLine" ]
+    then
+      IP_result=1
+    else
+      echo "No IP Address found. Exiting"
+      break
+    fi
+
+    if [ $found_result -eq 1 ]
+    then
+      response_rate=$(ping $devIPLine -c 5 -i 1 | grep -E -o '[0-9.]+%')
+    fi
+
+    if [ $response_rate = "100%" ]
+    then
+      echo "Connection lost. Exiting"
+      break
+    else
+      sleep 15
+    fi  
+  done
+  rm /tmp/CONNECT_SUCCESS
+  touch /tmp/CONNECT_FAIL
   exit 0
 else
   echo "Failed to find a connection"
