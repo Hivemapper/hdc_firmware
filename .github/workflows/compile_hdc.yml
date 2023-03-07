@@ -23,7 +23,7 @@ jobs:
       - run: |
            ls -al odc-api
            unzip odc-api
-           mv dashcam-api.js  dashcam/package/camera-node/files/dashcam-api.js
+           cp dashcam-api.js  dashcam/package/camera-node/files/dashcam-api.js
            ls -al dashcam/package/camera-node/files/dashcam-api.js
       - name: configure
         run: |
