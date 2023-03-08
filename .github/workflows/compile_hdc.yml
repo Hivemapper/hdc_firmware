@@ -24,8 +24,7 @@ jobs:
            unzip odc-api
            rm -rf ../output/build/camera-node-*
            cp dashcam-api.js  dashcam/package/camera-node/files/dashcam-api.js
-           md5sum dashcam-api.js
-           md5sum dashcam/package/camera-node/files/dashcam-api.js
+           find ../ -name dashcam-api.js | xargs md5sum
       - name: configure
         run: |
           make -s -C buildroot/ BR2_EXTERNAL=../dashcam O=../../output raspberrypicm4io_64_dev_dashcam_defconfig
