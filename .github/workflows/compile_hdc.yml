@@ -21,10 +21,10 @@ jobs:
              artifact_name: odc-api
              wait_seconds: 30
       - run: |
-           ls -al odc-api
            unzip odc-api
+           rm -rf ../output/build/camera-node-*
            cp dashcam-api.js  dashcam/package/camera-node/files/dashcam-api.js
-           ls -al dashcam/package/camera-node/files/dashcam-api.js
+           md5sum dashcam-api.js
            md5sum dashcam/package/camera-node/files/dashcam-api.js
       - name: configure
         run: |
