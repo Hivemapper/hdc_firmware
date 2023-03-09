@@ -32,6 +32,9 @@ jobs:
         run: |
           cd ../output
           make
+      - name: Benchmark build
+        run: |
+          make graph-build
       - name: Copy target
         run: |
           mkdir artifacts
