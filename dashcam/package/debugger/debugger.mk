@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DEBUGGER_VERSION = 0.1.7
+DEBUGGER_VERSION = 0.1.9
 DEBUGGER_SITE = https://github.com/streamingfast/hivemapper-hdc-debugger/releases/download/v$(DEBUGGER_VERSION)
 DEBUGGER_SOURCE = hivemapper-hdc-debugger_$(DEBUGGER_VERSION)_Linux_arm64.tar.gz
 

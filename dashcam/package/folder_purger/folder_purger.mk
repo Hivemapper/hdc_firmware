@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-FOLDER_PURGER_VERSION = 0.1.0
+FOLDER_PURGER_VERSION = 0.1.1
 FOLDER_PURGER_SITE = https://github.com/streamingfast/folder-purger/releases/download/v$(FOLDER_PURGER_VERSION)
 FOLDER_PURGER_SOURCE = folder-purger_$(FOLDER_PURGER_VERSION)_Linux_arm64.tar.gz
 FOLDER_PURGER_STRIP_COMPONENTS = 0
