@@ -81,3 +81,5 @@ fi
 if [[ ${IS_64} -ne 0 ]]; then
   sed -i "s/IGNORE_CCF=0/IGNORE_CCF=1/g" ${TARGET_DIR}/opt/dashcam/bin/bootbit.sh
 fi
+
+sudo apt-get install python3-pip
