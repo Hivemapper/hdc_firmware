@@ -4,6 +4,7 @@ After=network.target
 
 [Service]
 # TODO(chris.shaw): start with root and change back to dashcam when we have correct groups/permissions.
+# TEST did it work?
 User=root
 AmbientCapabilities=CAP_NET_BIND_SERVICE
 WorkingDirectory=/opt/dashcam/bin
