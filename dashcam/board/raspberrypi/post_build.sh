@@ -88,10 +88,10 @@ wget https://files.pythonhosted.org/packages/e0/a3/f1df79206764a122f7fe05084909c
 unzip -o /tmp/onnxruntime-1.15.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl -d ${TARGET_DIR}/usr/lib/python3.11/site-packages
 unzip -o /tmp/opencv_python-4.5.5.64-cp36-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl -d ${TARGET_DIR}/usr/lib/python3.11/site-packages
 
-install -D -m 0755 /opt/dashcam/bin/sqlite/_sqlite3.so ${TARGET_DIR}/usr/lib/python3.11/lib-dynload/_sqlite3.so
-install -D -m 0755 /opt/dashcam/bin/sqlite/libsqlite3.so.0.8.6 ${TARGET_DIR}/usr/lib/libsqlite3.so.0.8.6
+install -D -m 0755 ${TARGET_DIR}/opt/dashcam/bin/sqlite/_sqlite3.so ${TARGET_DIR}/usr/lib/python3.11/lib-dynload/_sqlite3.so
+install -D -m 0755 ${TARGET_DIR}/opt/dashcam/bin/sqlite/libsqlite3.so.0.8.6 ${TARGET_DIR}/usr/lib/libsqlite3.so.0.8.6
 ln -srf ${TARGET_DIR}/usr/lib/libsqlite3.so.0.8.6 ${TARGET_DIR}/usr/lib/libsqlite3.so.0
-cp -r /opt/dashcam/bin/sqlite/sqlite3 ${TARGET_DIR}/usr/lib/python3.11/
+cp -r ${TARGET_DIR}/opt/dashcam/bin/sqlite/sqlite3 ${TARGET_DIR}/usr/lib/python3.11/
 
 # Install TensorFlow Lite runtime wheel
 unzip -o /opt/dashcam/bin/sqlite/tflite_runtime-2.14.0-cp311-cp311-manylinux_2_34_aarch64.whl -d ${TARGET_DIR}/usr/lib/python3.11/site-packages
