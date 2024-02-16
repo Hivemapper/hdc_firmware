@@ -1,0 +1,16 @@
+[Unit]
+Description=Object Detection
+After=network.target
+
+[Service]
+
+User=root
+WorkingDirectory=/opt/dashcam/bin
+ExecStart=python3 detect_hdc.py --model_path /opt/dashcam/bin/model.tflite
+Restart=always
+
+StandardOutput=append:/mnt/data/object-detection.log
+StandardError=append:/mnt/data/object-detection.log
+
+[Install]
+WantedBy=multi-user.target
