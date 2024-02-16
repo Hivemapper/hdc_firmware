@@ -94,4 +94,4 @@ ln -srf ${TARGET_DIR}/usr/lib/libsqlite3.so.0.8.6 ${TARGET_DIR}/usr/lib/libsqlit
 cp -r ${TARGET_DIR}/opt/dashcam/bin/sqlite/sqlite3 ${TARGET_DIR}/usr/lib/python3.11/
 
 # Install TensorFlow Lite runtime wheel
-unzip -o /opt/dashcam/bin/sqlite/tflite_runtime-2.14.0-cp311-cp311-manylinux_2_34_aarch64.whl -d ${TARGET_DIR}/usr/lib/python3.11/site-packages
+unzip -o ${TARGET_DIR}/opt/dashcam/bin/sqlite/tflite_runtime-2.14.0-cp311-cp311-manylinux_2_34_aarch64.whl -d ${TARGET_DIR}/usr/lib/python3.11/site-packages
