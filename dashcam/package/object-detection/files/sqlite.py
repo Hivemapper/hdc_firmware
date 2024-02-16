@@ -22,10 +22,10 @@ class SQLite:
     def get_frames_for_ml(self, limit=10):
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT value FROM config WHERE key = "isDashcamMLEnabled"')
-            is_enabled = cursor.fetchone()
-            if not is_enabled or is_enabled[0] == 'false':
-                return [], 0
+            # cursor.execute('SELECT value FROM config WHERE key = "isDashcamMLEnabled"')
+            # is_enabled = cursor.fetchone()
+            # if not is_enabled or is_enabled[0] == 'false':
+            #     return [], 0
             
             cursor.execute('SELECT MIN(fkm_id) FROM framekms WHERE ml_model_hash is NULL AND (error is NULL OR error = "")  AND postponed = 0')
             min_framekm_id = cursor.fetchone()[0]
