@@ -82,8 +82,6 @@ class SQLite:
             cursor.execute('UPDATE framekms SET ml_model_hash=?, ml_detections=?, ml_processed_at=?, ml_inference_time=?, ml_read_time=?, ml_blur_time=?, ml_write_time=?, ml_downscale_time=?, ml_upscale_time=?, ml_mask_time=?, ml_composite_time=?, ml_load_time=?, ml_transpose_time=?, ml_letterbox_time=?, ml_grid=? WHERE image_name=?', (ml_model_hash, ml_detections_json, now, inference_time, read_time, blur_time, write_time, downscale_time, upscale_time, mask_time, composite_time, load_time, transpose_time, letterbox_time, grid, image_name))
             conn.commit()
 
-    
-
     def log_error(self, error):
         with self.get_connection() as conn:
             cursor = conn.cursor()
@@ -100,4 +98,3 @@ class SQLite:
             """
             cursor.execute(query, (service_name, status))
             conn.commit()
-

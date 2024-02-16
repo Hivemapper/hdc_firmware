@@ -95,7 +95,6 @@ def rescale_boxes(boxes, img_width, img_height, model_width, model_height):
     return boxes
 
 def detect(images, model, input_details, output_details, conf_threshold, nms_threshold, sqlite, model_hash):
-    print('detecting')
     metrics = {}
     #map images to set
     unprocessed_images = set(image[0] for image in images)
@@ -146,11 +145,10 @@ def detect(images, model, input_details, output_details, conf_threshold, nms_thr
         scores = predictions[:, 1].tolist()
         class_ids = predictions[:, 0].astype(int).tolist()
 
-      # Initialize empty output
-      res_output = [[] for _ in range(grid_size*grid_size)]
-
       if len(scores) == 0:
-          return res_output, None
+          for i, image in enumerate(images):
+            sqlite.set_frame_ml(image[0], model_hash, [], metrics)
+          return set(), None
 
       grouped_boxes = [[] for _ in range(grid_size*grid_size)]
       grouped_scores = [[] for _ in range(grid_size*grid_size)]
@@ -181,7 +179,6 @@ def detect(images, model, input_details, output_details, conf_threshold, nms_thr
           result = cv2.cvtColor(result, cv2.COLOR_BGR2RGB)
           pil_img = Image.fromarray(result)
           pil_img.save(os.path.join(image[1], image[0]), quality=80)
-          # cv2.imwrite(os.path.join(folder_path, image_name), result, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
           metrics['write_time'] = (time.perf_counter() - start) * 1000
           detections = [(box.tolist(), score, class_id) for box, score, class_id in zip(boxes, scores, class_ids)]
           sqlite.set_frame_ml(image[0], model_hash, detections, metrics)
@@ -279,40 +276,35 @@ def main(model_path, conf_threshold, nms_threshold, num_threads):
     while True:
       images = q.get()
 
-      #try:
-        # to switch between two models depending on speed, temporarily disabled
-        # is_optimised = image[1] > SPEED_THRESHOLD_FOR_OPTIMISED_MODEL
-        # session = session_sm if is_optimised else session_md
-      for image in enumerate(images):
-        image_name = image[0]
-        if image_name not in retry_counters:
-            retry_counters[image_name] = 0
-
-      if len(images) > 0:
-        print(len(images))
-        unprocessed_images, error = detect(images, model, input_details, output_details, conf_threshold, nms_threshold, sqlite, model_hash)
-        print('processed ' + str(len(images)) + ' images')
-        for image in enumerate(images):
-          image_name = image[0]
-          if image_name in unprocessed_images:
-            print('failed: ' + image_name)
+      try:
+        if len(images) > 0:
+          for image in enumerate(images):
+            image_name = image[0]
             if image_name not in retry_counters:
-              retry_counters[image_name] = 0
-            retry_counters[image_name] += 1
-            if retry_counters[image_name] >= 3:
-                # Postpone frame
-                errors_counter += 1
-                sqlite.set_error(image_name, str(error))
-                retry_counters.pop(image_name, None)
+                retry_counters[image_name] = 0
+
+          unprocessed_images, error = detect(images, model, input_details, output_details, conf_threshold, nms_threshold, sqlite, model_hash)
+          for image in enumerate(images):
+            image_name = image[0]
+            if image_name in unprocessed_images:
+              print('failed: ' + image_name)
+              if image_name not in retry_counters:
+                retry_counters[image_name] = 0
+              retry_counters[image_name] += 1
+              if retry_counters[image_name] >= 3:
+                  # Postpone frame
+                  errors_counter += 1
+                  sqlite.set_error(image_name, str(error))
+                  retry_counters.pop(image_name, None)
           else:
             retry_counters.pop(image_name, None)
 
-      # except Exception as e:
-      #   print(f"Error processing frames. Error: {e}")
-      #   errors_counter += 1
-      #   if errors_counter > 10:
-      #     errors_counter = 0
-      #     sqlite.set_service_status('failed')
+      except Exception as e:
+        print(f"Error processing frames. Error: {e}")
+        errors_counter += 1
+        if errors_counter > 10:
+          errors_counter = 0
+          sqlite.set_service_status('failed')
         
       q.task_done()
 
@@ -326,10 +318,10 @@ def main(model_path, conf_threshold, nms_threshold, num_threads):
     sqlite.set_service_status('healthy')
 
     while True:
-      # start_process = time.perf_counter()
       images, total = sqlite.get_frames_for_ml(50)
       print(total)
       
+      # Depending on how big is the processing queue,
       if total > 30:
         # split on groups of 9
         images = [images[i:i + 9] for i in range(0, len(images), 9)]
