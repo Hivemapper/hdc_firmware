@@ -120,7 +120,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isDev = exports.API_VERSION = void 0;
 __exportStar(__nccwpck_require__(9020), exports);
-exports.API_VERSION = '4.2.0';
+exports.API_VERSION = '4.2.1';
 const isDev = () => {
     return false;
 };
@@ -64753,7 +64753,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.isDev = exports.API_VERSION = void 0;
 __exportStar(__nccwpck_require__(4484), exports);
-exports.API_VERSION = '4.2.0';
+exports.API_VERSION = '4.2.1';
 const isDev = () => {
     return false;
 };
@@ -69263,7 +69263,7 @@ class DraftFrameKm {
                         };
                     }
                     // Making sure it's not too close to previous frame
-                    const allowed_gap = config_1.CAMERA_TYPE === types_1.CameraType.Hdc ? 1 : 0.5;
+                    const allowed_gap = config_1.CAMERA_TYPE === types_1.CameraType.Hdc ? 2 : 0.5;
                     if (!prevSelected ||
                         geomath_1.distance(prevSelected, frameCoordinates) > DX - allowed_gap) {
                         // get interpolated gnss metadata
