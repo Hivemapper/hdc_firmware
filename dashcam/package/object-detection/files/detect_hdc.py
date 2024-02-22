@@ -125,11 +125,7 @@ def detect(images, model, input_details, output_details, conf_threshold, nms_thr
           if max_score >= conf_threshold:
               class_id = np.argmax(scores)  # Determine the class with the highest probability
               box = xywh2xyxy(prediction[:4])  # Extract and convert bounding box coordinates
-              # filter out large boxes and boxes on the hood
-              if box[2] - box[0] > 0.8 * width and box[1] > 0.5 * height:
-                continue
-              else:
-                predictions.append([class_id, max_score, *box])
+              predictions.append([class_id, max_score, *box])
 
       # Convert to numpy array
       predictions = np.array(predictions)
@@ -166,6 +162,9 @@ def detect(images, model, input_details, output_details, conf_threshold, nms_thr
           w_offset, h_offset = offsets[image_index]
           box = transform_box(box, w_offset, h_offset, grid_size)
 
+          # filter out large boxes and boxes on the hood
+          if box[2] - box[0] > 0.8 * width and box[1] > 0.5 * height:
+            continue
           grouped_boxes[image_index].append(box)
           grouped_scores[image_index].append(score)
           grouped_classes[image_index].append(class_id)
@@ -182,7 +181,7 @@ def detect(images, model, input_details, output_details, conf_threshold, nms_thr
           pil_img = Image.fromarray(result)
           pil_img.save(os.path.join(image[1], image[0]), quality=80)
           metrics['write_time'] = (time.perf_counter() - start) * 1000
-          detections = [(box.tolist(), score, class_id) for box, score, class_id in zip(boxes, scores, class_ids)]
+          detections = [(box.tolist(), score, class_id) for box, score, class_id in zip(grouped_boxes[i], grouped_scores[i], grouped_classes[i])]
           sqlite.set_frame_ml(image[0], model_hash, detections, metrics)
           orig_images[i] = None
         else:
@@ -241,9 +240,6 @@ def blur(img, boxes, metrics):
 
     for box in boxes:
       box = box.astype(int)
-      # filter out large boxes and boxes on the hood
-      if box[2] - box[0] > 0.8 * width and box[1] > 0.5 * height:
-        continue
       cv2.rectangle(mask, (box[0], box[1]), (box[2], box[3]), 255, -1)
 
     metrics['mask_time'] = (time.perf_counter() - start) * 1000
