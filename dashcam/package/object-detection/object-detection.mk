@@ -17,6 +17,8 @@ define OBJECT_DETECTION_INSTALL_TARGET_CMDS
 		$(TARGET_DIR)/opt/dashcam/bin/sqlite.py
 	$(INSTALL) -D -m 644 $(@D)/model.tflite \
 		$(TARGET_DIR)/opt/dashcam/bin/model.tflite
+	$(INSTALL) -D -m 644 $(@D)/n640_float16.tflite \
+		$(TARGET_DIR)/opt/dashcam/bin/n640_float16.tflite
 	$(INSTALL) -D -m 644 $(@D)/object-detection.service \
 		$(TARGET_DIR)/usr/lib/systemd/system/object-detection.service
 endef
