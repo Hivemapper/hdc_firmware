@@ -44,7 +44,11 @@ def combine_images(images, grid_size, model_size):
             img_path = image.get_path(images[i][0], images[i][1], "/tmp/recording/pic")
 
             # Read and resize image to fit in the grid cell
-            img = cv2.imread(img_path)
+            img = None
+            try: 
+              img = cv2.imread(img_path)
+            except Exception as e:
+              print(e)
             orig_images.append(img)
             if img is None:
               # if input img is broken or empty
