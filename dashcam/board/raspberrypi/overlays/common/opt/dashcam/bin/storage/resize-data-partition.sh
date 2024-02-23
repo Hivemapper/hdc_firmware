@@ -124,4 +124,5 @@ if [ ! -f "$SWAPFILE" ]; then
     echo "Swapfile created and activated" | tee -a $EMMC_RESULTS_TMP
 else
     echo "Swapfile already exists" | tee -a $EMMC_RESULTS_TMP
+    echo 10 > /proc/sys/vm/swappiness
 fi

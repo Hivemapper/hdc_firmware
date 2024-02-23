@@ -54,7 +54,10 @@ def combine_images(images, grid_size, model_size):
               # if input img is broken or empty
               resized_img = np.zeros((cell_height, cell_width, 3), dtype=np.int8)
             else:
-              resized_img = image.letterbox(img, (cell_width, cell_height))[0]
+              if grid_size > 1:
+                resized_img = cv2.resize(img, (cell_width, cell_height), interpolation=cv2.INTER_NEAREST)
+              else:
+                resized_img = image.letterbox(img, (cell_width, cell_height))[0]
         else:
             # Use an empty (black) image for spots without images
             resized_img = np.zeros((cell_height, cell_width, 3), dtype=np.int8)
@@ -68,14 +71,16 @@ def combine_images(images, grid_size, model_size):
 
     return combined_img, orig_images
 
-def transform_box(box, w_offset=0, h_offset=0, multiplier=2):
+def transform_box(box, w_offset=0, h_offset=0, grid_size=1):
   ratio = width / height
-  padding = (width - height) / 2 
+  padding = (width - height) / 2 if grid_size == 1 else 0
+  x_multiplier = grid_size
+  y_multiplier = grid_size * ratio if grid_size == 1 else grid_size
   new_box = np.floor(np.array([
-    (box[0] - w_offset) * multiplier,
-    (box[1] - h_offset) * multiplier * ratio - padding,
-    (box[2] - w_offset) * multiplier,
-    (box[3] - h_offset) * multiplier * ratio - padding
+    (box[0] - w_offset) * x_multiplier,
+    (box[1] - h_offset) * y_multiplier - padding,
+    (box[2] - w_offset) * x_multiplier,
+    (box[3] - h_offset) * y_multiplier - padding
   ])).astype(int)
   
   # Making sure all the box coordinates are within the boundaries

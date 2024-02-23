@@ -29,4 +29,4 @@ then
   fi
 fi
 
-nice -n -1 ./libcamera-bridge --config camera_bridge_config.json --config-override /mnt/data/camera_bridge_config.json --segment 0  --timeout 0 --tuning-file imx477.json
+nice -n -1 ionice -c 1 -n 0 -t ./libcamera-bridge --config camera_bridge_config.json --config-override /mnt/data/camera_bridge_config.json --segment 0  --timeout 0 --tuning-file imx477.json
