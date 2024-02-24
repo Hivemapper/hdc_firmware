@@ -71,7 +71,13 @@ class SQLite:
                     result = cursor.fetchone()
                     if result:
                         value = result[0]
-                        config[key] = value
+                        # Convert to appropriate type based on default value
+                        if isinstance(default_value, float):
+                            config[key] = float(value)
+                        elif isinstance(default_value, int):
+                            config[key] = int(value)
+                        else:
+                            config[key] = str(value).strip('"')
         except Exception as e:
             print(e)
 
