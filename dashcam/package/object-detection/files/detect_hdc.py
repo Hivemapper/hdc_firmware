@@ -267,15 +267,17 @@ def blur(img, boxes, metrics):
 
     return result, metrics
 
-def main(model_path, conf_threshold, nms_threshold, num_threads):
+def main():
 
   retry_counters = {}
   q = queue.Queue()
   sqlite = SQLite('/mnt/data/data-logger.v1.4.5.db')
+  config = sqlite.get_privacy_config()
+  print(config)
 
   def worker():
-    model = interpreter.Interpreter(model_path)
-    model_hash = 'a56942a9ad253b2f61097785219df54326f21ba06ba41a175d9c5a84339d14a1'
+    model = interpreter.Interpreter(config["PrivacyModelPath"])
+    model_hash = config["PrivacyModelHash"]
     model.allocate_tensors()
     input_details = model.get_input_details()
     output_details = model.get_output_details()
@@ -291,7 +293,7 @@ def main(model_path, conf_threshold, nms_threshold, num_threads):
             if image_name not in retry_counters:
                 retry_counters[image_name] = 0
 
-          unprocessed_images, error = detect(images, model, input_details, output_details, conf_threshold, nms_threshold, sqlite, model_hash)
+          unprocessed_images, error = detect(images, model, input_details, output_details, config["PrivacyConfThreshold"], config["PrivacyNmsThreshold"], sqlite, model_hash)
           for image in enumerate(images):
             image_name = image[0]
             if image_name in unprocessed_images:
@@ -317,7 +319,7 @@ def main(model_path, conf_threshold, nms_threshold, num_threads):
       q.task_done()
 
   # init threads
-  for i in range(num_threads):
+  for i in range(config["PrivacyNumThreads"]):
     threading.Thread(target=worker, daemon=True).start()
 
   # init watcher
@@ -330,13 +332,13 @@ def main(model_path, conf_threshold, nms_threshold, num_threads):
       print(total)
       
       # Depending on how big is the processing queue,
-      if total > 30:
+      if total > 40:
         # split on groups of 9
         images = [images[i:i + 9] for i in range(0, len(images), 9)]
         # push every group to queue
         for group in images:
           q.put(group)
-      elif total > 10:
+      elif total > 15:
         # split on groups of 4
         images = [images[i:i + 4] for i in range(0, len(images), 4)]
         # push every group to queue
@@ -358,17 +360,4 @@ def main(model_path, conf_threshold, nms_threshold, num_threads):
     raise e
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--model_path', type=str)
-  parser.add_argument('--conf_threshold', type=float, default=0.3)
-  parser.add_argument('--nms_threshold', type=float, default=0.9)
-  parser.add_argument('--num_threads', type=int, default=6)
-
-  args = parser.parse_args()
-
-  main(
-    args.model_path,
-    args.conf_threshold,
-    args.nms_threshold,
-    args.num_threads
-  )
+  main()
