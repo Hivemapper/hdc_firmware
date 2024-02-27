@@ -207,7 +207,6 @@ def detect(images, model, input_details, output_details, conf_threshold, nms_thr
       print(e)
       return unprocessed_images, e 
 
-
 def blur(img, boxes, metrics):
   blur_per_boxes = False
   if len(boxes) < 30:
@@ -219,6 +218,9 @@ def blur(img, boxes, metrics):
   if blur_per_boxes:
     for box in boxes:
       box = box.astype(int)
+      # filter out large boxes and boxes on the hood
+      if box[2] - box[0] > 0.8 * width and box[1] > 0.5 * height:
+        continue
       roi = img[box[1]:box[3], box[0]:box[2]]
       roi_downscale_width = int(roi.shape[1] * 0.2)
       roi_downscale_height = int(roi.shape[0] * 0.2)
@@ -332,13 +334,7 @@ def main():
       print(total)
       
       # Depending on how big is the processing queue,
-      if total > 40:
-        # split on groups of 9
-        images = [images[i:i + 9] for i in range(0, len(images), 9)]
-        # push every group to queue
-        for group in images:
-          q.put(group)
-      elif total > 15:
+      if total > 15:
         # split on groups of 4
         images = [images[i:i + 4] for i in range(0, len(images), 4)]
         # push every group to queue

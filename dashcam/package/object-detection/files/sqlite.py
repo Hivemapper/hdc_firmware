@@ -57,7 +57,7 @@ class SQLite:
         default_values = {
             'PrivacyModelPath': '/opt/dashcam/bin/n640_float16.tflite',
             'PrivacyModelHash': 'a56942a9ad253b2f61097785219df54326f21ba06ba41a175d9c5a84339d14a1',
-            'PrivacyConfThreshold': 0.2,
+            'PrivacyConfThreshold': 0.3,
             'PrivacyNmsThreshold': 0.9,
             'PrivacyNumThreads': 6
         }
