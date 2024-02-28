@@ -54,10 +54,7 @@ def combine_images(images, grid_size, model_size):
               # if input img is broken or empty
               resized_img = np.zeros((cell_height, cell_width, 3), dtype=np.int8)
             else:
-              if grid_size > 1:
-                resized_img = cv2.resize(img, (cell_width, cell_height), interpolation=cv2.INTER_NEAREST)
-              else:
-                resized_img = image.letterbox(img, (cell_width, cell_height))[0]
+              resized_img = image.letterbox(img, (cell_width, cell_height))[0]
         else:
             # Use an empty (black) image for spots without images
             resized_img = np.zeros((cell_height, cell_width, 3), dtype=np.int8)
@@ -73,9 +70,9 @@ def combine_images(images, grid_size, model_size):
 
 def transform_box(box, w_offset=0, h_offset=0, grid_size=1):
   ratio = width / height
-  padding = (width - height) / 2 if grid_size == 1 else 0
+  padding = (width - height) / 2
   x_multiplier = grid_size
-  y_multiplier = grid_size * ratio if grid_size == 1 else grid_size
+  y_multiplier = grid_size * ratio
   new_box = np.floor(np.array([
     (box[0] - w_offset) * x_multiplier,
     (box[1] - h_offset) * y_multiplier - padding,
@@ -176,7 +173,7 @@ def detect(images, model, input_details, output_details, conf_threshold, nms_thr
           box = transform_box(box, w_offset, h_offset, grid_size)
 
           # filter out large boxes and boxes on the hood
-          if box[2] - box[0] > 0.8 * width and box[1] > 0.5 * height:
+          if (box[2] - box[0] > 0.8 * width and box[1] > 0.5 * height) or (box[2] - box[0] > 0.7 * width and box[3] - box[1] > 0.7 * height):
             continue
           grouped_boxes[image_index].append(box)
           grouped_scores[image_index].append(score)
@@ -219,7 +216,7 @@ def blur(img, boxes, metrics):
     for box in boxes:
       box = box.astype(int)
       # filter out large boxes and boxes on the hood
-      if box[2] - box[0] > 0.8 * width and box[1] > 0.5 * height:
+      if (box[2] - box[0] > 0.8 * width and box[1] > 0.5 * height) or (box[2] - box[0] > 0.7 * width and box[3] - box[1] > 0.7 * height):
         continue
       roi = img[box[1]:box[3], box[0]:box[2]]
       roi_downscale_width = int(roi.shape[1] * 0.2)
