@@ -6,7 +6,7 @@ After=network.target
 
 User=root
 WorkingDirectory=/opt/dashcam/bin
-ExecStart=cpulimit -l 170 python3 detect_hdc.py --model_path /opt/dashcam/bin/n640_float16.tflite
+ExecStart=cpulimit -l 200 python3 detect_hdc.py --model_path /opt/dashcam/bin/n640_float16.tflite
 Restart=always
 
 StandardOutput=append:/mnt/data/object-detection.log
