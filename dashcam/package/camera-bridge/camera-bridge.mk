@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CAMERA_BRIDGE_VERSION = 6134330c82a8317763b7ed81c8fe6c630015c696
+CAMERA_BRIDGE_VERSION = 959d3fb108c8d89d634e336c29203ccd1b912bc4
 CAMERA_BRIDGE_SITE = git@github.com:Hivemapper/camera_bridge.git
 CAMERA_BRIDGE_SITE_METHOD = git
 CAMERA_BRIDGE_CONF_OPTS = -DENABLE_OPENCV=0 -DCMAKE_INSTALL_PREFIX="/opt/dashcam"\
