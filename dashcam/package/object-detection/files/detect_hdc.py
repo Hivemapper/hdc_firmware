@@ -338,12 +338,32 @@ def main():
         if errors_counter > 10:
           errors_counter = 0
           sqlite.set_service_status('failed')
-        
+        try: 
+          if "inference" in str(e).lower() or "interpreter" in str(e).lower:
+            single_model = interpreter.Interpreter(config["PrivacyModelPath"])
+            single_model_hash = config["PrivacyModelHash"]
+            single_model.allocate_tensors()
+            single_input_details = single_model.get_input_details()
+            single_output_details = single_model.get_output_details()
+
+            grid_model = interpreter.Interpreter(config["PrivacyModelGridPath"])
+            grid_model_hash = config["PrivacyModelGridHash"]
+            grid_model.allocate_tensors()
+            grid_input_details = grid_model.get_input_details()
+            grid_output_details = grid_model.get_output_details()
+            time.sleep(2)
+        except Exception as err:
+          sqlite.set_service_status('failed')
+        try:
+          sqlite.log_error(e)
+        except Exception as e:
+          print(f"Error logging error: {e}")
       q.task_done()
 
   # init threads
   for i in range(config["PrivacyNumThreads"]):
     threading.Thread(target=worker, daemon=True).start()
+    time.sleep(1)
 
   # init watcher
   try:
@@ -361,6 +381,7 @@ def main():
         # push every group to queue
         for group in images:
           q.put(group)
+          time.sleep(0.1)
       elif total > 0:
         #split on single images arrays
         for image in images:

@@ -61,7 +61,7 @@ class SQLite:
             'PrivacyModelGridHash': 'ca6c60c041e62bb175be9e1b3295674777780967e92cf7d6750b90fc3a8525bd',
             'PrivacyConfThreshold': 0.3,
             'PrivacyNmsThreshold': 0.9,
-            'PrivacyNumThreads': 6
+            'PrivacyNumThreads': 4
         }
         config = default_values.copy()
 
