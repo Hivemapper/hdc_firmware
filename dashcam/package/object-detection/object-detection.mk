@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-OBJECT_DETECTION_VERSION = 4.2.9.2
+OBJECT_DETECTION_VERSION = 4.2.10
 OBJECT_DETECTION_SITE = $(BR2_EXTERNAL_DASHCAM_PATH)/package/object-detection/files
 OBJECT_DETECTION_SITE_METHOD = local
 
