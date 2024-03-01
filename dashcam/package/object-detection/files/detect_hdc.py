@@ -369,13 +369,15 @@ def main():
   try:
     print('Starting watcher')
     sqlite.set_service_status('healthy')
+    prev_images_len = 0
+    empty_loops = 0
 
     while True:
       images, total = sqlite.get_frames_for_ml(50)
       print(total)
       
       # Depending on how big is the processing queue,
-      if total > 15:
+      if total > 25:
         # split on groups of 4
         images = [images[i:i + 4] for i in range(0, len(images), 4)]
         # push every group to queue
@@ -389,7 +391,16 @@ def main():
 
       q.join()
 
-      time.sleep(3 if len(images) == 0 else 1 if len(retry_counters) > 0 else 0.1)
+      if (prev_images_len == len(images) and prev_images_len > 0):
+        empty_loops += 1
+        if empty_loops > 10:
+          empty_loops = 0
+          sqlite.set_service_status('failed')
+      else:
+        empty_loops = 0
+      prev_images_len = len(images)
+
+      time.sleep(3 if len(images) == 0 else 1 if (len(retry_counters) > 0 or empty_loops > 0) else 0.2)
 
   except KeyboardInterrupt:
     print('Watcher stopped by user')
