@@ -113,7 +113,7 @@ def detect(images, model, input_details, output_details, conf_threshold, nms_thr
     try:
       # Read and preprocess the image
       start_read = time.perf_counter()
-      grid_size = 3 if len(images) > 4 else 2 if len(images) > 1 else 1
+      grid_size = 2 if len(images) > 1 else 1
       metrics['grid'] = grid_size
 
       model_size = input_details[0]['shape'][1]
@@ -175,6 +175,11 @@ def detect(images, model, input_details, output_details, conf_threshold, nms_thr
           # filter out large boxes and boxes on the hood
           if (box[2] - box[0] > 0.8 * width and box[1] > 0.5 * height) or (box[2] - box[0] > 0.7 * width and box[3] - box[1] > 0.7 * height):
             continue
+
+          # if box is pretty big (1/6 of frame or bigger), let's be extra-confident in prediction
+          if ((box[2] - box[0]) * (box[3] - box[1]) > (image_size_px / 6) and score < conf_threshold + 0.1):
+            continue
+
           grouped_boxes[image_index].append(box)
           grouped_scores[image_index].append(score)
           grouped_classes[image_index].append(class_id)
@@ -275,12 +280,21 @@ def main():
   print(config)
 
   def worker():
-    model = interpreter.Interpreter(config["PrivacyModelPath"])
-    model_hash = config["PrivacyModelHash"]
-    model.allocate_tensors()
-    input_details = model.get_input_details()
-    output_details = model.get_output_details()
+    single_model = interpreter.Interpreter(config["PrivacyModelPath"])
+    single_model_hash = config["PrivacyModelHash"]
+    single_model.allocate_tensors()
+    single_input_details = single_model.get_input_details()
+    single_output_details = single_model.get_output_details()
+
+    grid_model = interpreter.Interpreter(config["PrivacyModelGridPath"])
+    grid_model_hash = config["PrivacyModelGridHash"]
+    grid_model.allocate_tensors()
+    grid_input_details = grid_model.get_input_details()
+    grid_output_details = grid_model.get_output_details()
+
     errors_counter = 0
+    conf_threshold = config["PrivacyConfThreshold"]
+    nms_threshold = config["PrivacyNmsThreshold"]
 
     while True:
       images = q.get()
@@ -292,7 +306,14 @@ def main():
             if image_name not in retry_counters:
                 retry_counters[image_name] = 0
 
-          unprocessed_images, error = detect(images, model, input_details, output_details, config["PrivacyConfThreshold"], config["PrivacyNmsThreshold"], sqlite, model_hash)
+          is_grid = len(images) > 1
+          model = grid_model if is_grid else single_model
+          model_hash = grid_model_hash if is_grid else single_model_hash
+          input_details = grid_input_details if is_grid else single_input_details
+          output_details = grid_output_details if is_grid else single_output_details
+          conf = conf_threshold - 0.1 if is_grid else conf_threshold
+
+          unprocessed_images, error = detect(images, model, input_details, output_details, conf, nms_threshold, sqlite, model_hash)
           for image in enumerate(images):
             image_name = image[0]
             if image_name in unprocessed_images:
