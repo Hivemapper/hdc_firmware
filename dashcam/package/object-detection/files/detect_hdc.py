@@ -16,7 +16,7 @@ image_size_px = width * height
 
 def xywh2xyxy(box, model_size, grid_size):
     x, y, w, h = box
-    multiplier = model_size if grid_size > 1 else 1
+    multiplier = model_size
     x_min = (x - w / 2) * multiplier
     y_min = (y - h / 2) * multiplier
     x_max = (x + w / 2) * multiplier
