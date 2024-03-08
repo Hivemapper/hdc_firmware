@@ -326,7 +326,7 @@ def main():
           model_hash = grid_model_hash if is_grid else single_model_hash
           input_details = grid_input_details if is_grid else single_input_details
           output_details = grid_output_details if is_grid else single_output_details
-          conf = conf_threshold - 0.1 if is_grid else conf_threshold
+          conf = conf_threshold - 0.05 if is_grid else conf_threshold
 
           unprocessed_images, error = detect(images, model, input_details, output_details, conf, nms_threshold, sqlite, model_hash)
           for image in enumerate(images):

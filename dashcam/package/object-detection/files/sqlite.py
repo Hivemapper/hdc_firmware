@@ -60,8 +60,8 @@ class SQLite:
             'PrivacyModelGridPath': '/opt/dashcam/bin/n800_2x2_float16.tflite',
             'PrivacyModelGridHash': 'e2f5488db4aa6bb0b1dba82476a238ca899c804cbee580f398051d62b7874702',
             'LowSpeedThreshold': 17,
-            'PrivacyConfThreshold': 0.3,
-            'PrivacyNmsThreshold': 0.9,
+            'PrivacyConfThreshold': 0.2,
+            'PrivacyNmsThreshold': 0.8,
             'PrivacyNumThreads': 4
         }
         config = default_values.copy()
