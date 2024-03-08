@@ -21,7 +21,9 @@
       "scale_width": 2028,
       "scale_height": 1024,
       "crop_width": 4056,
+      "skip_4k": true,
       "crop_height": 2048,
+      "buffer_size": 4153344,
       "crop_offset_from_top":0,
       "min_usb_free_space": 4000000000,
       "max_usb_files": 65000

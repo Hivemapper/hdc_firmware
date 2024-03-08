@@ -1,0 +1,3 @@
+config BR2_PACKAGE_USB_WRITE
+	bool "usb-write"
+    select BR2_PACKAGE_PYTHON3

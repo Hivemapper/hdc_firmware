@@ -1,0 +1,13 @@
+[Unit]
+Description=Usb Write
+After=network.target
+
+[Service]
+
+User=root
+WorkingDirectory=/opt/dashcam/bin
+ExecStart=nice -n 10 ionice -c 1 -n 7 -t python3 usb-write.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
