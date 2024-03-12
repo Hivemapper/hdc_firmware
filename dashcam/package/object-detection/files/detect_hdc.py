@@ -52,7 +52,11 @@ def combine_images(images, grid_size, model_size):
             try: 
               img = cv2.imread(img_path)
             except Exception as e:
-              print(e)
+              try:
+                 img = cv2.imread(os.path.join(images[i][1], images[i][0]))
+              except Exception as err:
+                print(err)
+            
             orig_images.append(img)
             if img is None:
               # if input img is broken or empty
