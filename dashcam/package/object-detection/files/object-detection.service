@@ -6,11 +6,8 @@ After=network.target
 
 User=root
 WorkingDirectory=/opt/dashcam/bin
-ExecStart=cpulimit -l 230 python3 detect_hdc.py
+ExecStart=cpulimit -l 220 python3 detect_hdc.py
 Restart=always
 
 StandardOutput=append:/mnt/data/object-detection.log
 StandardError=append:/mnt/data/object-detection.log
-
-[Install]
-WantedBy=multi-user.target
