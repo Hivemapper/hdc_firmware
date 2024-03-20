@@ -1,4 +1,5 @@
 config BR2_PACKAGE_DATA_LOGGER
 	bool "data-logger"
+	depends on BR2_PACKAGE_HOST_GO_TARGET_ARCH_SUPPORTS
 	help
 	  System data logger
