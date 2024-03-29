@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CAMERA_NODE_VERSION = 4.4.20
+CAMERA_NODE_VERSION = 4.4.23
 CAMERA_NODE_SITE = $(BR2_EXTERNAL_DASHCAM_PATH)/package/camera-node/files
 CAMERA_NODE_SITE_METHOD = local
 CAMERA_NODE_DEPENDENCIES = nodejs
