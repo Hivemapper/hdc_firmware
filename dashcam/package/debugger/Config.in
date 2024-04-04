@@ -1,4 +1,0 @@
-config BR2_PACKAGE_DEBUGGER
-	bool "debugger"
-	help
-	  General utility scripts
