@@ -58,7 +58,8 @@ dtparam=watchdog=on
 
 #Set minimum frequency so our image bus can push 10 fps
 #Also overclock the eMMC so that we can write as close to 10 fps to it.
-arm_freq_min=1100
+arm_freq_min=800
+arm_freq=1700
 #init_emmc_clock=300000000
 
 [cm4]
