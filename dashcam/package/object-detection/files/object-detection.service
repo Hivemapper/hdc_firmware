@@ -1,0 +1,13 @@
+[Unit]
+Description=Object Detection
+After=network.target
+
+[Service]
+
+User=root
+WorkingDirectory=/opt/dashcam/bin
+ExecStart=python3 detect_hdc.py
+Restart=always
+
+StandardOutput=append:/mnt/data/object-detection.log
+StandardError=append:/mnt/data/object-detection.log

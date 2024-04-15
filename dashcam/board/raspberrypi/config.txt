@@ -12,7 +12,7 @@ kernel=u-boot.bin
 # If the text shown on the screen disappears off the edge, comment this out
 disable_overscan=1
 
-gpu_mem=256
+gpu_mem=100
 gpu_mem_256=100
 gpu_mem_512=100
 gpu_mem_1024=100
@@ -58,7 +58,8 @@ dtparam=watchdog=on
 
 #Set minimum frequency so our image bus can push 10 fps
 #Also overclock the eMMC so that we can write as close to 10 fps to it.
-arm_freq_min=1100
+arm_freq_min=800
+arm_freq=1400
 #init_emmc_clock=300000000
 
 [cm4]

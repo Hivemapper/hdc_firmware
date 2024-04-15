@@ -4,15 +4,13 @@
 #
 ################################################################################
 
-DATA_LOGGER_VERSION = 54d716ae215ab799fc30f1f5f9dfa3347590c61e
-DATA_LOGGER_SITE = git@github.com:Hivemapper/hivemapper-data-logger.git
-DATA_LOGGER_SITE_METHOD = git
-DATA_LOGGER_GOLANG_BUILD_TARGETS += ./cmd/datalogger
-DATA_LOGGER_GOLANG_INSTALL_BINS += datalogger
-DATA_LOGGER_GOMOD = ./cmd/datalogger
+DATA_LOGGER_VERSION = 1.4.8
+DATA_LOGGER_SITE = https://github.com/Hivemapper/hivemapper-data-logger/releases/download/v$(DATA_LOGGER_VERSION)
+DATA_LOGGER_SOURCE = hivemapper-data-logger_$(DATA_LOGGER_VERSION)_Linux_arm64.tar.gz
+DATA_LOGGER_STRIP_COMPONENTS = 0
 
 define DATA_LOGGER_INSTALL_TARGET_CMDS
-	$(INSTALL) -D -m 755 $(@D)/bin/data-logger $(TARGET_DIR)/opt/dashcam/bin/datalogger
+	$(INSTALL) -D -m 755 $(@D)/datalogger $(TARGET_DIR)/opt/dashcam/bin
 endef
 
 define DATA_LOGGER_INSTALL_INIT_SYSTEMD
@@ -20,4 +18,4 @@ define DATA_LOGGER_INSTALL_INIT_SYSTEMD
 		$(TARGET_DIR)/usr/lib/systemd/system/data-logger.service
 endef
 
-$(eval $(golang-package))
+$(eval $(generic-package))
