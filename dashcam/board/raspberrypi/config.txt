@@ -60,7 +60,7 @@ dtparam=watchdog=on
 force_turbo=1  # Forces turbo mode frequencies even when the ARM cores are not busy
 
 # Overclocking and Voltage settings
-arm_freq=1400  # Frequency of the ARM CPU in MHz
+arm_freq=1600  # Frequency of the ARM CPU in MHz
 
 [cm4]
 # {RPi} 
