@@ -61,6 +61,7 @@ force_turbo=1  # Forces turbo mode frequencies even when the ARM cores are not b
 
 # Overclocking and Voltage settings
 arm_freq=1600  # Frequency of the ARM CPU in MHz
+over_voltage=2  # Adjust CPU/GPU core voltage to improve stability at higher frequencies
 
 [cm4]
 # {RPi} 
