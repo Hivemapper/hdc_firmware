@@ -291,7 +291,7 @@ def main():
 
   retry_counters = {}
   q = queue.Queue()
-  sqlite = SQLite('/mnt/data/data-logger.v1.4.6.db')
+  sqlite = SQLite('/mnt/data/data-logger.v1.4.5.db')
   config = sqlite.get_privacy_config()
   print(config)
 
