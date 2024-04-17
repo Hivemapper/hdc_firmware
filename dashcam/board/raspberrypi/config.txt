@@ -56,11 +56,11 @@ dtparam=watchdog=on
 # 64-bit.  As such, don't delete this.
 #arm_64bit=1
 
-#Set minimum frequency so our image bus can push 10 fps
-#Also overclock the eMMC so that we can write as close to 10 fps to it.
-arm_freq_min=800
-arm_freq=1400
-#init_emmc_clock=300000000
+# Force the CPU to always run at maximum frequency
+force_turbo=1  # Forces turbo mode frequencies even when the ARM cores are not busy
+
+# Overclocking and Voltage settings
+arm_freq=1400  # Frequency of the ARM CPU in MHz
 
 [cm4]
 # {RPi} 
