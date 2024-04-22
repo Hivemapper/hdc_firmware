@@ -67,7 +67,7 @@ class SQLite:
             'LowSpeedThreshold': 17,
             'PrivacyConfThreshold': 0.2,
             'PrivacyNmsThreshold': 0.8,
-            'PrivacyNumThreads': 2
+            'PrivacyNumThreads': 3
         }
         config = default_values.copy()
 
