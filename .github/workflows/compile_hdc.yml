@@ -40,8 +40,11 @@ jobs:
       - name: Generate timestamp
         id: timestamp
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: Extract firmware version from ODC API
+        id: firmware_version
+        run: echo "::set-output name=version::$(bash extract_firmware_version.sh)"
       - name: Upload
         uses: actions/upload-artifact@master
         with:
-          name: ${{ steps.timestamp.outputs.date }}-buildroot-hdc
+          name: ${{ steps.timestamp.outputs.date }}-${{ steps.firmware_version.outputs.version }}.raucb
           path: artifacts/firmware_update.raucb
