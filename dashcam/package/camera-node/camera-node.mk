@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-CAMERA_NODE_VERSION = 35c8f354c5345fff88937f7cda90c7d1a1f09f83
+CAMERA_NODE_VERSION = f246aa2de27a5ebe9a793eae63bd0c0f771c2581
 CAMERA_NODE_SITE = git@github.com:Hivemapper/odc-api.git
 CAMERA_NODE_SITE_METHOD = git
 CAMERA_NODE_DEPENDENCIES = host-nodejs nodejs
