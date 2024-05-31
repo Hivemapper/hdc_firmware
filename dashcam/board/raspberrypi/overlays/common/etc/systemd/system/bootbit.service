@@ -7,8 +7,7 @@ Description=Dashcam Boot BIT
 # near the end of the boot process but we allow plenty of time for the monitored
 # processes to come online.
 After=rauc.service
-After=onboard-updater.service
-After=camera-api.service
+After=camera-node.service
 
 [Service]
 Type=oneshot
