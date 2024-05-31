@@ -33,18 +33,18 @@ jobs:
         run: |
           cd ../output
           make
-      - name: Copy target
-        run: |
-          mkdir artifacts
-          cp ../output/images/update.raucb ./artifacts/firmware_update.raucb
       - name: Generate timestamp
         id: timestamp
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: Extract firmware version from ODC API
         id: firmware_version
         run: echo "::set-output name=version::$(bash extract_firmware_version.sh)"
+      - name: Copy target
+        run: |
+          mkdir artifacts
+          cp ../output/images/update.raucb ./artifacts/${{ steps.timestamp.outputs.date }}_${{ steps.firmware_version.outputs.version }}.raucb
       - name: Upload
         uses: actions/upload-artifact@master
         with:
-          name: ${{ steps.timestamp.outputs.date }}-${{ steps.firmware_version.outputs.version }}.raucb
-          path: artifacts/firmware_update.raucb
+          name: buildroot-hdc
+          path: artifacts/${{ steps.timestamp.outputs.date }}_${{ steps.firmware_version.outputs.version }}.raucb

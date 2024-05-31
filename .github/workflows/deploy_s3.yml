@@ -23,7 +23,7 @@ jobs:
           unzip buildroot-hdc
           ls -al 
           mkdir tmp
-          mv firmware_update.raucb tmp/
+          mv *.raucb tmp/
           echo  ${{ secrets.AWS_KEY_ID }} 
       - uses: shallwefootball/s3-upload-action@master
         with:
