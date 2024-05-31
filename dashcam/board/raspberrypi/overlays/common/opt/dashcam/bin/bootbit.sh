@@ -27,7 +27,7 @@ fw_setenv UNBOOTED_UPDATE 0
 
 # We should probably pull the expected address from dhcpcd.conf.
 WIFI_IP=192.168.0.10
-OU_PORT=8080
+OU_PORT=5000
 
 print_info() {
   echo -e "$1" | systemd-cat -p info -t bootbit
@@ -40,10 +40,6 @@ print_error() {
 
 fail() {
   print_error "BIT failed: $1"
-
-  # Update the OU with the failure message so at least it can be shown to the
-  # user somehow.
-  wget -O - --post-data "$1" http://localhost:${OU_PORT}/bootstate > /dev/null 2>&1
 
   if [ ${NEW_UPDATE} -ne 0 ]; then
     # If we fail on the first boot after an update we immediately revert to the
@@ -85,7 +81,7 @@ check_proc_ids() {
 
 # Note we're going to search for these using the "comm" column of ps which
 # truncates the process name to 15 chars.
-OU_PROC="onboardupdater"
+OU_PROC="dashcam-api"
 RAUC_PROC="rauc"
 CCF_PROC="capable_camera_"
 
@@ -95,7 +91,7 @@ CCF_PID=
 
 # This first loop tries to identify the PIDs of processes we are interested in.
 ITER=0
-NUM_ITERS=20
+NUM_ITERS=30
 while true; do
   [ -z "${OU_PID}" ] && OU_PID=$(get_proc_id "${OU_PROC}")
   [ -z "${RAUC_PID}" ] && RAUC_PID=$(get_proc_id "${RAUC_PROC}")
@@ -155,11 +151,9 @@ fi
 #  sleep 1
 #done
 
-# Test the onboard updater is answering requests.
-# We use localhost because we may end up using a different address
-# negotiated by wifi-direct.
-wget http://127.0.0.1:${OU_PORT}/status --spider > /dev/null 2>&1
-[ "$?" -ne 0 ] && fail "cannot get status from onboard updater"
+# Test ODC API is answering requests
+wget http://localhost:${OU_PORT}/api/1/info --spider > /dev/null 2>&1
+[ "$?" -ne 0 ] && fail "cannot get status from ODC API"
 
 # Test that the persistent data partition is mounted.
 cat /proc/mounts | grep /mnt/data > /dev/null 2>&1
@@ -167,7 +161,6 @@ cat /proc/mounts | grep /mnt/data > /dev/null 2>&1
 
 # This resets the boot counter for this slot group.
 rauc status mark-good
-wget -O - --post-data "healthy" http://localhost:${OU_PORT}/bootstate > /dev/null 2>&1
 touch /opt/dashcam/READY
 echo "BOOT TEST PASSES"
 
