@@ -81,7 +81,7 @@ check_proc_ids() {
 
 # Note we're going to search for these using the "comm" column of ps which
 # truncates the process name to 15 chars.
-OU_PROC="dashcam-api"
+OU_PROC="node"
 RAUC_PROC="rauc"
 CCF_PROC="capable_camera_"
 
