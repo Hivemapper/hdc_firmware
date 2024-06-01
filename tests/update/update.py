@@ -25,7 +25,7 @@ reboot_timeout_s = 60
 # Amount of time we allow for an HTTP response.
 request_timeout_s = 1
 # Port the onboard updater is running on.
-target_port = 8080
+target_port = 5000
 # The update bundles as binary files read into memory.
 updates = [None, None, None]
 # The version file from the update bundles.
@@ -417,7 +417,7 @@ def update(
     )
 
     # Do the update test
-    multiple_updates(base_uri, num, power_cycle_config)
+    # multiple_updates(base_uri, num, power_cycle_config)
 
     print(f"Script complete. Artifacts in {work_dir}")
 

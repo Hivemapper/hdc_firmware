@@ -9,4 +9,3 @@ systemctl stop imu-logger
 systemctl stop lorawan-logger
 systemctl stop led-controller
 systemctl stop rauc
-systemctl stop onboard-updater
