@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    uses: Hivemapper/hdc_firmware/.github/workflows/compile_hdc.yml@main
+    uses: Hivemapper/hdc_firmware/.github/workflows/compile_hdc.yml@cicd-test
   deploy:
     name: Upload Firmware to S3
     runs-on: ubuntu-latest
