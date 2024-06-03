@@ -2,10 +2,13 @@ name: Deploy
 
 on: 
   workflow_dispatch:
+  workflow_run:
+    workflows: ["compile_hdc"]
+    types:
+      - completed
+    branches:
+      - master
 jobs:
-  build:
-    uses: Hivemapper/hdc_firmware/.github/workflows/compile_hdc.yml@cicd-test
-    secrets: inherit
   deploy:
     name: Upload Firmware to S3
     runs-on: ubuntu-latest
