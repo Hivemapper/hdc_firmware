@@ -5,6 +5,8 @@ on:
   push:
     tags:
       - "*"
+  # This allows us to call this workflow from deploy_s3.yml
+  workflow_call:
 
 jobs:
   build:
