@@ -33,7 +33,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: dashcam-firmware
           source_dir: 'tmp/'
-          destination_dir: hdc
+          destination_dir: ${{ github.ref_name}}
   on-failure:
     name: Notify on failure
     runs-on: ubuntu-latest
