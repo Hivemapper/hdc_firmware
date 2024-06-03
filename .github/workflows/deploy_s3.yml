@@ -29,6 +29,6 @@ jobs:
         with:
           aws_key_id: ${{ secrets.AWS_KEY_ID }} 
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          aws_bucket: dashcam-firmware
           source_dir: 'tmp/'
           destination_dir: ${{ github.ref_name }}
