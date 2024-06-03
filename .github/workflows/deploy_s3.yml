@@ -5,6 +5,7 @@ on:
 jobs:
   build:
     uses: Hivemapper/hdc_firmware/.github/workflows/compile_hdc.yml@cicd-test
+    secrets: inherit
   deploy:
     name: Upload Firmware to S3
     runs-on: ubuntu-latest
