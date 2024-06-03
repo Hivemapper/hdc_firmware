@@ -7,7 +7,7 @@ on:
       - "*"
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v3
         with:
@@ -19,6 +19,7 @@ jobs:
       - name: Compile
         run: |
           cd ../output
+          make clean
           make
       - name: Generate timestamp
         id: timestamp

@@ -34,5 +34,5 @@ jobs:
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
           aws_bucket: dashcam-firmware
           source_dir: 'tmp/'
-          destination_dir: ${{ github.ref_name}}
+          destination_dir: 'cicd'
   
