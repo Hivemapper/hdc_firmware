@@ -14,6 +14,6 @@ jobs:
     steps:
       - run: pwd
       - run: ls -lH
-      # - name: Removing all old files
-      #   run: rm -rf ./*
+      - name: Removing all old files
+        run: rm -rf ./*
       - run: echo "Cleaned up project successfully, run compile_hdc to build again."
