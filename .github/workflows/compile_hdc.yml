@@ -17,11 +17,9 @@ jobs:
       - name: configure
         run: |
           make -s -C buildroot/ BR2_EXTERNAL=../dashcam O=../../output raspberrypicm4io_64_dev_dashcam_defconfig
-      # Note: If developing, remove `make clean`
       - name: Compile
         run: |
           cd ../output
-          make clean
           make
       - name: Generate timestamp
         id: timestamp

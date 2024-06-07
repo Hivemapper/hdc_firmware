@@ -1,0 +1,25 @@
+# This workflow is triggered manually by the user to clean up the project.
+# Do this if you are experiencing issues with compile_hdc.yml and want to start fresh.
+# Note that a clean build can take up to 6 hours.
+
+name: clean_hdc
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.CLASSIC_TOKEN }}
+          submodules: recursive
+      - name: Configure
+        run: |
+          make -s -C buildroot/ BR2_EXTERNAL=../dashcam O=../../output raspberrypicm4io_64_dev_dashcam_defconfig
+      - name: Make clean
+        run: |
+          cd ../output
+          make clean
+      - run: echo "Cleaned up project successfully, run compile_hdc to build again."
