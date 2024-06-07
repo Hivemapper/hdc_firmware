@@ -6,7 +6,6 @@ name: clean_hdc
 
 on:
   workflow_dispatch:
-  push:
 
 jobs:
   build:

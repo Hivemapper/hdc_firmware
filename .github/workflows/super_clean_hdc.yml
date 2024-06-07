@@ -6,11 +6,14 @@ name: super_clean_hdc
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   build:
     runs-on: self-hosted
     steps:
-      - name: Removing all old files
-        run: rm -rf ./*
+      - run: pwd
+      - run: ls -lH
+      # - name: Removing all old files
+      #   run: rm -rf ./*
       - run: echo "Cleaned up project successfully, run compile_hdc to build again."
