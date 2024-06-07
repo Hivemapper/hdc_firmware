@@ -6,6 +6,7 @@ name: super_clean_hdc
 
 on:
   workflow_dispatch:
+  push:
 
 jobs:
   build:
