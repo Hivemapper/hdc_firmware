@@ -3,8 +3,8 @@ name: compile_hdc
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "*"
+    branches:
+      - main
 jobs:
   build:
     runs-on: self-hosted
