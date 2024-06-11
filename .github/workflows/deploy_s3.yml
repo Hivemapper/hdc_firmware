@@ -2,13 +2,16 @@ name: Deploy
 
 on: 
   workflow_dispatch:
-   push:
-    tags:
-      - '*'
+  workflow_run:
+    workflows: ["compile_hdc"]
+    types:
+      - completed
+    branches:
+      - master
 jobs:
   deploy:
     name: Upload Firmware to S3
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions:
       deployments: write
     steps:
@@ -23,12 +26,13 @@ jobs:
           unzip buildroot-hdc
           ls -al 
           mkdir tmp
-          mv firmware_update.raucb tmp/
+          mv *.raucb tmp/
           echo  ${{ secrets.AWS_KEY_ID }} 
       - uses: shallwefootball/s3-upload-action@master
         with:
           aws_key_id: ${{ secrets.AWS_KEY_ID }} 
           aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: ${{ secrets.AWS_BUCKET }}
+          aws_bucket: dashcam-firmware
           source_dir: 'tmp/'
-          destination_dir: ${{ github.ref_name }}
+          destination_dir: 'cicd'
+  

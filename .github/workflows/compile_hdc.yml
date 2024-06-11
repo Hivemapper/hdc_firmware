@@ -3,29 +3,17 @@ name: compile_hdc
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "*"
-
+    branches:
+      - main
 jobs:
   build:
     runs-on: self-hosted
+    timeout-minutes: 600
     steps:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.CLASSIC_TOKEN }}
           submodules: recursive
-      - uses: bettermarks/action-artifact-download@0.3.0
-        with:
-             token: ${{ secrets.CLASSIC_TOKEN }}
-             repo: hivemapper/odc-api
-             artifact_name: odc-api
-             wait_seconds: 30
-      - run: |
-           ls -al odc-api
-           unzip odc-api
-           cp dashcam-api.js  dashcam/package/camera-node/files/dashcam-api.js
-           ls -al dashcam/package/camera-node/files/dashcam-api.js
-           md5sum dashcam/package/camera-node/files/dashcam-api.js
       - name: configure
         run: |
           make -s -C buildroot/ BR2_EXTERNAL=../dashcam O=../../output raspberrypicm4io_64_dev_dashcam_defconfig
@@ -33,12 +21,18 @@ jobs:
         run: |
           cd ../output
           make
+      - name: Generate timestamp
+        id: timestamp
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: Extract firmware version from ODC API
+        id: firmware_version
+        run: echo "::set-output name=version::$(bash extract_firmware_version.sh)"
       - name: Copy target
         run: |
           mkdir artifacts
-          cp ../output/images/update.raucb ./artifacts/firmware_update.raucb
+          cp ../output/images/update.raucb ./artifacts/${{ steps.timestamp.outputs.date }}_${{ steps.firmware_version.outputs.version }}.raucb
       - name: Upload
         uses: actions/upload-artifact@master
         with:
           name: buildroot-hdc
-          path: artifacts/firmware_update.raucb
+          path: artifacts/${{ steps.timestamp.outputs.date }}_${{ steps.firmware_version.outputs.version }}.raucb

@@ -1,0 +1,16 @@
+# This workflow is triggered manually by the user to completely erase the project.
+# Do this if you are experiencing issues with compile_hdc.yml and want to start fresh.
+# Note that a clean build can take up to 6 hours.
+
+name: super_clean_hdc
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Removing all old files
+        run: rm -rf ./* ../output/*
+      - run: echo "Cleaned up project successfully, run compile_hdc to build again."
