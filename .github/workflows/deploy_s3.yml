@@ -11,7 +11,7 @@ on:
 jobs:
   deploy:
     name: Upload Firmware to S3
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions:
       deployments: write
     steps:
