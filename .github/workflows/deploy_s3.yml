@@ -23,6 +23,8 @@ jobs:
           wait_seconds: 30
       - run: |
           ls -al
+          rm *.raucb
+          rm -rf tmp/
           unzip -o buildroot-hdc
           ls -al 
           mkdir tmp
