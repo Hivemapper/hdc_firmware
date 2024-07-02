@@ -27,7 +27,6 @@ jobs:
           ls -al 
           mkdir tmp
           mv *.raucb tmp/
-          echo  ${{ secrets.AWS_KEY_ID }} 
       - uses: shallwefootball/s3-upload-action@master
         id: upload_s3
         with:
