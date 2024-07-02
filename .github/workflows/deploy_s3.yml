@@ -26,7 +26,7 @@ jobs:
           unzip buildroot-hdc
           ls -al 
           mkdir tmp
-          mv *.raucb tmp/
+          mv -f *.raucb tmp/
       - uses: shallwefootball/s3-upload-action@master
         id: upload_s3
         with:
