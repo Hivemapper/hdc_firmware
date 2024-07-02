@@ -43,7 +43,7 @@ jobs:
           # For posting a rich message using Block Kit
           payload: |
             {
-              "text": "testing 123 ${{upload_s3.output.object_locations}}"
+              "text": "testing 123 ${{steps.upload_s3.outputs.object_locations}}"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
