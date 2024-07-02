@@ -17,11 +17,10 @@ jobs:
       - name: configure
         run: |
           make -s -C buildroot/ BR2_EXTERNAL=../dashcam O=../../output raspberrypicm4io_64_dev_dashcam_defconfig
-      - name: Clean odc-api if present
-        run: make camera-node-dirclean
       - name: Compile
         run: |
           cd ../output
+          make camera-node-dirclean
           make
       - name: Generate timestamp
         id: timestamp
