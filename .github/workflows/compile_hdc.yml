@@ -20,6 +20,7 @@ jobs:
       - name: Compile
         run: |
           cd ../output
+          make camera-node-dirclean
           make
       - name: Generate timestamp
         id: timestamp
