@@ -9,7 +9,6 @@ from typing import Optional
 gnss_offset : Optional[datetime.timedelta] = None
 def try_to_get_gnss_time():
     global gnss_offset
-    print('try_to_get_gnss_time')
     if gnss_offset is not None:
         return
     try:
@@ -17,9 +16,7 @@ def try_to_get_gnss_time():
             gnss_time_ms = int(f.readline())
         gnss_time = datetime.datetime.fromtimestamp(gnss_time_ms / 1000)
         gnss_offset = gnss_time - datetime.datetime.now()
-        print('gnss_offset', gnss_offset)
     except FileNotFoundError:
-        print('failed')
         pass
 
 def correct_date(timestamp: datetime.datetime) -> datetime.datetime:
@@ -56,14 +53,12 @@ def copy_file(file_path, dest_folder):
 def main() -> None:
     usb_path = "/media/usb0"
     source_folder = "/tmp/recording/pic"
-    gnss_time_path = '/tmp/gnss_time.txt'
     last_checked_date = datetime.datetime.now().date()
     last_check_time = time.time()
     last_copied_file = None
     fail_count = 0
 
     try_to_get_gnss_time()
-
 
     while True:
         if is_mountpoint(usb_path):
