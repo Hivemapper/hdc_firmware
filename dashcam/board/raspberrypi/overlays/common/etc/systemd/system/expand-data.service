@@ -2,7 +2,6 @@
 Description=Expand data partition on startup
 
 Before=rauc.service
-Before=onboard-updater.service
 Before=camera-node.service
 Before=api-health-manager.service
 Before=camera-bridge.service
