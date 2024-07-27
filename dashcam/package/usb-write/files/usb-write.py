@@ -4,24 +4,31 @@ import shutil
 import datetime
 import subprocess
 
+from pathlib import Path
 from typing import Optional
 
 gnss_offset : Optional[datetime.timedelta] = None
-def try_to_get_gnss_time():
+# Returns True if the time was set, False if it failed or if the time was already set.
+def try_to_get_gnss_time() -> bool:
     global gnss_offset
     if gnss_offset is not None:
-        return
+        return False
     try:
         with open('/tmp/gnss_time.txt') as f:
             gnss_time_ms = int(f.readline())
         gnss_time = datetime.datetime.fromtimestamp(gnss_time_ms / 1000)
         gnss_offset = gnss_time - datetime.datetime.now()
+        print('time', gnss_time, gnss_offset)
     except FileNotFoundError:
-        pass
+        print('failed')
+        return False
+
+    return True
 
 def correct_date(timestamp: datetime.datetime) -> datetime.datetime:
     if gnss_offset is None:
         return timestamp
+    print('corrected', timestamp + gnss_offset)
     return timestamp + gnss_offset
 
 def is_mountpoint(path):
@@ -48,12 +55,14 @@ def get_latest_file(src_folder):
         return None
 
 def copy_file(file_path, dest_folder):
-    shutil.copy2(file_path, dest_folder)
+    dest_path = Path(dest_folder)
+    corrected_timestamp = f'{correct_date(datetime.datetime.now()).timestamp()}'.replace('.', '_')
+    shutil.copy2(file_path, dest_path / f'{corrected_timestamp}.jpg')
 
 def main() -> None:
     usb_path = "/media/usb0"
     source_folder = "/tmp/recording/pic"
-    last_checked_date = datetime.datetime.now().date()
+    last_checked_date = correct_date(datetime.datetime.now()).date()
     last_check_time = time.time()
     last_copied_file = None
     fail_count = 0
@@ -66,7 +75,9 @@ def main() -> None:
 
             while True:
                 try:
-                    try_to_get_gnss_time()
+                    if try_to_get_gnss_time() == True:
+                        dest_folder = check_and_create_folder(usb_path)
+                    print('dest_folder', dest_folder)
                     latest_file = get_latest_file(source_folder)
                     if latest_file and latest_file != last_copied_file:
                         copy_file(latest_file, dest_folder)
@@ -75,7 +86,8 @@ def main() -> None:
 
                     current_time = time.time()
                     if current_time - last_check_time > 300:  # 5 minutes in seconds
-                        current_date = datetime.datetime.now().date()
+                        current_date = correct_date(datetime.datetime.now()).date()
+                        print('current_date', current_date)
                         if current_date != last_checked_date:
                             last_checked_date = current_date
                             dest_folder = check_and_create_folder(usb_path)
