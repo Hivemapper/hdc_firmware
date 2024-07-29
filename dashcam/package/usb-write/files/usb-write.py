@@ -57,7 +57,7 @@ class JpegMemoryControl:
     def _build_database(self) -> None:
         self.current_size = 0
         self.file_queue.clear()
-        sorted_files = sorted((file for file in RECORDING_PATH.glob('**/*.jpg')), key=lambda file: file.name.zfill(15))
+        sorted_files = sorted((file for file in RECORDING_PATH.glob('**/*.jpg')), key=lambda file: file.name.zfill(25))
         for file in sorted_files:
             self.file_queue.append(file)
             self.current_size += os.path.getsize(file)
