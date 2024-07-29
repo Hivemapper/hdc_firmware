@@ -27,7 +27,7 @@ class JpegMemoryControl:
         self._start_cleanup_thread()
 
     def prepare(self) -> None:
-        while not is_mountpoint(USB_MOUNT_PATH):
+        while not os.path.ismount(USB_MOUNT_PATH):
             time.sleep(1)
         self._build_database()
 
@@ -39,10 +39,14 @@ class JpegMemoryControl:
         return file_path in self.file_queue
 
     def _cleanup(self):
+        print('cleanup')
         if self.current_size > self.max_size or len(self.file_queue) > self.max_files:
+            print('in if')
             files_to_remove = min(300, len(self.file_queue))
+            print('files', files_to_remove)
             for _ in range(files_to_remove):
                 old_file = self.file_queue.popleft()
+                print(old_file)
                 try:
                     file_size = os.path.getsize(old_file)
                     os.remove(old_file)
@@ -53,7 +57,7 @@ class JpegMemoryControl:
     def _build_database(self) -> None:
         self.current_size = 0
         self.file_queue.clear()
-        sorted_files = sorted((file for file in RECORDING_PATH.glob('**/*.jpg')), key=lambda file: file.name)
+        sorted_files = sorted((file for file in RECORDING_PATH.glob('**/*.jpg')), key=lambda file: file.name.zfill(15))
         for file in sorted_files:
             self.file_queue.append(file)
             self.current_size += os.path.getsize(file)
@@ -93,7 +97,7 @@ def try_to_get_gnss_time() -> bool:
 def correct_date(timestamp: datetime.datetime) -> datetime.datetime:
     if gnss_offset is None:
         return timestamp
-    print('corrected', timestamp + gnss_offset)
+    # print('corrected', timestamp + gnss_offset)
     return timestamp + gnss_offset
 
 def is_mountpoint(path):
@@ -125,7 +129,7 @@ def copy_file(file_path, dest_folder: str) -> None:
     try:
         dest_file_path = dest_folder_path / f'{corrected_timestamp}.jpg'
         shutil.copy2(file_path, dest_file_path)
-        jpegMemoryControl.add(file_path)
+        jpegMemoryControl.add(dest_file_path)
     except FileNotFoundError:
         print('Usb not found!')
 
@@ -147,7 +151,7 @@ def main() -> None:
                 try:
                     if try_to_get_gnss_time() == True:
                         dest_folder = check_and_create_folder(usb_path)
-                    print('dest_folder', dest_folder)
+                    #print('dest_folder', dest_folder)
                     latest_file = get_latest_file(source_folder)
                     if latest_file and latest_file != last_copied_file:
                         copy_file(latest_file, dest_folder)
