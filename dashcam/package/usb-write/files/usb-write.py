@@ -15,7 +15,7 @@ RECORDING_PATH = USB_MOUNT_PATH / 'recording'
 
 # TODO: change to min usb space required
 class JpegMemoryControl:
-    def __init__(self, max_size: int = 400_000_000, max_files: int = 64_000) -> None:
+    def __init__(self, max_size: int = 32_000_000_000, max_files: int = 64_000) -> None:
         self.base_dir : Path = USB_MOUNT_PATH
         self.max_size : int = max_size
         self.max_files : int = max_files
