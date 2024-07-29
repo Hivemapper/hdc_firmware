@@ -3,9 +3,74 @@ import time
 import shutil
 import datetime
 import subprocess
+import threading
 
 from pathlib import Path
 from typing import Optional
+from collections import deque
+
+USB_MOUNT_PATH = Path('/media/usb0')
+RECORDING_PATH = USB_MOUNT_PATH / 'recording'
+
+
+# TODO: change to min usb space required
+class JpegMemoryControl:
+    def __init__(self, max_size: int = 400_000_000, max_files: int = 64_000) -> None:
+        self.base_dir : Path = USB_MOUNT_PATH
+        self.max_size : int = max_size
+        self.max_files : int = max_files
+        self.file_queue: deque = deque()
+        self.current_size : int = 0
+        self.cleanup_interval : int = 5
+
+        self.prepare()
+        self._start_cleanup_thread()
+
+    def prepare(self) -> None:
+        while not is_mountpoint(USB_MOUNT_PATH):
+            time.sleep(1)
+        self._build_database()
+
+    def add(self, file_path: Path) -> None:
+        self.file_queue.append(file_path)
+        self.current_size += os.path.getsize(file_path)
+
+    def contains(self, file_path):
+        return file_path in self.file_queue
+
+    def _cleanup(self):
+        if self.current_size > self.max_size or len(self.file_queue) > self.max_files:
+            files_to_remove = min(300, len(self.file_queue))
+            for _ in range(files_to_remove):
+                old_file = self.file_queue.popleft()
+                try:
+                    file_size = os.path.getsize(old_file)
+                    os.remove(old_file)
+                    self.current_size -= file_size
+                except FileNotFoundError:
+                    pass  # File already deleted or usb was removed
+
+    def _build_database(self) -> None:
+        self.current_size = 0
+        self.file_queue.clear()
+        sorted_files = sorted((file for file in RECORDING_PATH.glob('**/*.jpg')), key=lambda file: file.name)
+        for file in sorted_files:
+            self.file_queue.append(file)
+            self.current_size += os.path.getsize(file)
+
+    def _start_cleanup_thread(self):
+        self.cleanup_thread = threading.Thread(target=self._run_cleanup, daemon=True)
+        self.cleanup_thread.start()
+
+    def _run_cleanup(self):
+        while True:
+            time.sleep(self.cleanup_interval)
+            if not os.path.ismount(USB_MOUNT_PATH):
+                self.prepare()    
+            self._cleanup()
+
+jpegMemoryControl = JpegMemoryControl()
+
 
 gnss_offset : Optional[datetime.timedelta] = None
 # Returns True if the time was set, False if it failed or if the time was already set.
@@ -42,7 +107,7 @@ def check_and_create_folder(base_path: str) -> str:
     os.makedirs(daily_folder, exist_ok=True)
     return daily_folder
 
-def get_latest_file(src_folder):
+def get_latest_file(src_folder: str) -> Optional[str]:
     try:
         completed_process = subprocess.run(
             ['sh', '-c', f'ls -t {src_folder}/*.jpg | head -1'],
@@ -54,10 +119,15 @@ def get_latest_file(src_folder):
     except subprocess.CalledProcessError:
         return None
 
-def copy_file(file_path, dest_folder):
-    dest_path = Path(dest_folder)
+def copy_file(file_path, dest_folder: str) -> None:
+    dest_folder_path = Path(dest_folder)
     corrected_timestamp = f'{correct_date(datetime.datetime.now()).timestamp()}'.replace('.', '_')
-    shutil.copy2(file_path, dest_path / f'{corrected_timestamp}.jpg')
+    try:
+        dest_file_path = dest_folder_path / f'{corrected_timestamp}.jpg'
+        shutil.copy2(file_path, dest_file_path)
+        jpegMemoryControl.add(file_path)
+    except FileNotFoundError:
+        print('Usb not found!')
 
 def main() -> None:
     usb_path = "/media/usb0"
