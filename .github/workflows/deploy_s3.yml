@@ -54,7 +54,7 @@ jobs:
           # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
           channel-id: 'hdc-firmware-deploy'
           # For posting a simple plain text message
-          slack-message: "*${{ github.actor }}* deployed an image based on ${{ github.ref }}\nSHA: ${{ github.sha }}\nVersion JSON:\n```${{ steps.firmware_version_json.version }}```\nURL: ${{ steps.upload_s3.outputs.object_locations }}"
+          slack-message: "*${{ github.actor }}* deployed an image based on ${{ github.ref }}\nSHA: ${{ github.sha }}\nVersion JSON:\n```${{ steps.firmware_version_json.outputs.version }}```\nURL: ${{ steps.upload_s3.outputs.object_locations }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           
