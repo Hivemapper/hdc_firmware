@@ -21,14 +21,21 @@ jobs:
           token: ${{ secrets.CLASSIC_TOKEN }}
           artifact_name: buildroot-hdc
           wait_seconds: 30
+
       - run: |
           ls -al
           rm -f *.raucb
+          rm -f version.json
           rm -rf tmp/
           unzip -o buildroot-hdc
           ls -al 
           mkdir tmp
           mv -f *.raucb tmp/
+
+      - name: Grab version.json
+        id: firmware_version_json
+        run: echo "::set-output name=version::$(cat version.json)"
+
       - uses: shallwefootball/s3-upload-action@master
         id: upload_s3
         with:
@@ -37,6 +44,7 @@ jobs:
           aws_bucket: dashcam-firmware
           source_dir: 'tmp/'
           destination_dir: 'cicd'
+
       - name: Send custom JSON data to Slack workflow
         id: slack
         uses: slackapi/slack-github-action@v1.26.0
@@ -46,7 +54,7 @@ jobs:
           # You can pass in multiple channels to post to by providing a comma-delimited list of channel IDs.
           channel-id: 'hdc-firmware-deploy'
           # For posting a simple plain text message
-          slack-message: "*${{ github.actor }}* deployed an image based on ${{ github.ref }}\nSHA: ${{ github.sha }}\nURL: ${{ steps.upload_s3.outputs.object_locations }}"
+          slack-message: "*${{ github.actor }}* deployed an image based on ${{ github.ref }}\nSHA: ${{ github.sha }}\nVersion JSON:\n```${{ steps.firmware_version_json.version }}```\nURL: ${{ steps.upload_s3.outputs.object_locations }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
           

@@ -36,9 +36,10 @@ jobs:
       - name: Copy target
         run: |
           mkdir artifacts
+          cp ../output/target/etc/version.json ./artifacts/version.json
           cp ../output/images/update.raucb ./artifacts/${{ steps.timestamp.outputs.date }}_${{ steps.firmware_version.outputs.version }}.raucb
       - name: Upload
         uses: actions/upload-artifact@master
         with:
           name: buildroot-hdc
-          path: artifacts/${{ steps.timestamp.outputs.date }}_${{ steps.firmware_version.outputs.version }}.raucb
+          path: artifacts
