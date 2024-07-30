@@ -1,3 +1,6 @@
+# HDC Build Server needs to be enabled for this workflow to run
+# https://us-west-2.console.aws.amazon.com/ec2/home?region=us-west-2#InstanceDetails:instanceId=i-0e2df2f7d6610d647
+
 name: compile_hdc
 
 on:
