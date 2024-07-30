@@ -36,7 +36,7 @@ jobs:
         id: firmware_version_json
         run: |
           version_json=$(cat version.json | tr -d '\n')
-          echo "::set-output name=version::$version_json)"
+          echo "::set-output name=version::$version_json"
 
       - uses: shallwefootball/s3-upload-action@master
         id: upload_s3
