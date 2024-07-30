@@ -25,7 +25,7 @@ jobs:
       - name: Compile
         run: |
           cd ../output
-          make camera-node-dirclean camera-bridge-dirclean data-logger-dirclean usb-writer-dirclean
+          make camera-node-dirclean camera-bridge-dirclean data-logger-dirclean usb-write-dirclean
           make
       - name: Generate timestamp
         id: timestamp
