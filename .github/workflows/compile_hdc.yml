@@ -1,3 +1,6 @@
+# HDC Build Server needs to be enabled for this workflow to run
+# https://us-west-2.console.aws.amazon.com/ec2/home?region=us-west-2#InstanceDetails:instanceId=i-0e2df2f7d6610d647
+
 name: compile_hdc
 
 on:
@@ -17,10 +20,12 @@ jobs:
       - name: configure
         run: |
           make -s -C buildroot/ BR2_EXTERNAL=../dashcam O=../../output raspberrypicm4io_64_dev_dashcam_defconfig
+      # Buildroot is not good at picking up when a package needs to be rebuilt.
+      # Force clean the most commonly modified packages.
       - name: Compile
         run: |
           cd ../output
-          make camera-node-dirclean
+          make camera-node-dirclean camera-bridge-dirclean data-logger-dirclean usb-write-dirclean
           make
       - name: Generate timestamp
         id: timestamp
@@ -31,9 +36,10 @@ jobs:
       - name: Copy target
         run: |
           mkdir artifacts
+          cp ../output/target/etc/version.json ./artifacts/version.json
           cp ../output/images/update.raucb ./artifacts/${{ steps.timestamp.outputs.date }}_${{ steps.firmware_version.outputs.version }}.raucb
       - name: Upload
         uses: actions/upload-artifact@master
         with:
           name: buildroot-hdc
-          path: artifacts/${{ steps.timestamp.outputs.date }}_${{ steps.firmware_version.outputs.version }}.raucb
+          path: artifacts
