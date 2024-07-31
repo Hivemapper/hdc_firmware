@@ -6,6 +6,7 @@ import subprocess
 import threading
 import psutil
 
+
 from pathlib import Path
 from typing import Optional, Deque
 from collections import deque
@@ -56,7 +57,7 @@ class JpegMemoryControl:
 
     def _build_database(self) -> None:
         self.file_queue.clear()
-        sorted_files = sorted((file for file in RECORDING_PATH.glob('**/*.jpg')), key=lambda file: file.name.zfill(25))
+        sorted_files = sorted((file for file in RECORDING_PATH.glob('**/*.jpg')), key=lambda file: file.stat().st_ctime)
         for file in sorted_files:
             self.file_queue.append(file)
 
@@ -123,13 +124,19 @@ def get_latest_file(src_folder: str) -> Optional[str]:
 
 def copy_file(file_path, dest_folder: str) -> None:
     dest_folder_path = Path(dest_folder)
-    corrected_timestamp = f'{correct_date(datetime.datetime.now()).timestamp()}'.replace('.', '_')
+    corrected_date = correct_date(datetime.datetime.now())
+    corrected_timestamp = f'{corrected_date.timestamp()}'.replace('.', '_')
     try:
         dest_file_path = dest_folder_path / f'{corrected_timestamp}.jpg'
         shutil.copy2(file_path, dest_file_path)
+        subprocess.run([
+            'touch', '-d', corrected_date.strftime('%Y-%m-%d %H:%M:%S'), str(dest_file_path)
+        ])
         jpegMemoryControl.add(dest_file_path)
     except FileNotFoundError:
         print('Usb not found!')
+    except subprocess.CalledProcessError:
+        print('set timestamp failed')
 
 def main() -> None:
     usb_path = "/media/usb0"
