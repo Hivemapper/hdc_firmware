@@ -4,23 +4,22 @@ import shutil
 import datetime
 import subprocess
 import threading
+import psutil
 
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Deque
 from collections import deque
 
 USB_MOUNT_PATH = Path('/media/usb0')
 RECORDING_PATH = USB_MOUNT_PATH / 'recording'
 
 
-# TODO: change to min usb space required
 class JpegMemoryControl:
-    def __init__(self, max_size: int = 32_000_000_000, max_files: int = 64_000) -> None:
+    def __init__(self, min_usb_space: int = 4q_000_000_000, max_files: int = 64_000) -> None:
         self.base_dir : Path = USB_MOUNT_PATH
-        self.max_size : int = max_size
+        self.min_usb_space : int = min_usb_space
         self.max_files : int = max_files
-        self.file_queue: deque = deque()
-        self.current_size : int = 0
+        self.file_queue: Deque[Path] = deque()
         self.cleanup_interval : int = 5
 
         self.prepare()
@@ -33,34 +32,33 @@ class JpegMemoryControl:
 
     def add(self, file_path: Path) -> None:
         self.file_queue.append(file_path)
-        self.current_size += os.path.getsize(file_path)
 
     def contains(self, file_path):
         return file_path in self.file_queue
 
     def _cleanup(self):
-        print('cleanup')
-        if self.current_size > self.max_size or len(self.file_queue) > self.max_files:
-            print('in if')
-            files_to_remove = min(300, len(self.file_queue))
-            print('files', files_to_remove)
+        try:
+            usb_free_space = psutil.disk_usage(USB_MOUNT_PATH).free
+        except FileNotFoundError:
+            # USB was unplugged, skip cleanup
+            return
+
+        print('usb_free:', usb_free_space)
+        if usb_free_space < self.min_usb_space or len(self.file_queue) > self.max_files:
+            files_to_remove = min(100, len(self.file_queue))
+            print('files to remove', files_to_remove)
             for _ in range(files_to_remove):
                 old_file = self.file_queue.popleft()
-                print(old_file)
                 try:
-                    file_size = os.path.getsize(old_file)
                     os.remove(old_file)
-                    self.current_size -= file_size
                 except FileNotFoundError:
                     pass  # File already deleted or usb was removed
 
     def _build_database(self) -> None:
-        self.current_size = 0
         self.file_queue.clear()
         sorted_files = sorted((file for file in RECORDING_PATH.glob('**/*.jpg')), key=lambda file: file.name.zfill(25))
         for file in sorted_files:
             self.file_queue.append(file)
-            self.current_size += os.path.getsize(file)
 
     def _start_cleanup_thread(self):
         self.cleanup_thread = threading.Thread(target=self._run_cleanup, daemon=True)
