@@ -6,8 +6,6 @@ on:
     workflows: ["compile_hdc"]
     types:
       - completed
-    branches:
-      - main
 jobs:
   deploy:
     name: Upload Firmware to S3
