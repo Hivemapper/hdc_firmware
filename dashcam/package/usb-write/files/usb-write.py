@@ -125,21 +125,17 @@ def get_latest_file(src_folder: str) -> Optional[str]:
     except subprocess.CalledProcessError:
         return None
 
-def copy_file(file_path, dest_folder: str) -> None:
+def copy_file(file_path: str, dest_folder: str) -> None:
     dest_folder_path = Path(dest_folder)
-    corrected_date = correct_date(datetime.datetime.now())
-    corrected_timestamp = f'{corrected_date.timestamp()}'.replace('.', '_')
+    corrected_date = correct_date(datetime.datetime.now()).timestamp()
+    corrected_date_string = f'{corrected_date}'.replace('.', '_')
+    dest_file_path = dest_folder_path / f'{corrected_date_string}.jpg'
     try:
-        dest_file_path = dest_folder_path / f'{corrected_timestamp}.jpg'
         shutil.copy2(file_path, dest_file_path)
-        subprocess.run([
-            'touch', '-d', corrected_date.strftime('%Y-%m-%d %H:%M:%S'), str(dest_file_path)
-        ])
+        os.utime(dest_file_path, (corrected_date, corrected_date))
         jpegMemoryControl.add(dest_file_path)
     except FileNotFoundError:
         print('Usb not found!')
-    except subprocess.CalledProcessError:
-        print('set timestamp failed')
 
 def main() -> None:
     usb_path = "/media/usb0"
