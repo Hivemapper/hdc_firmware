@@ -86,10 +86,9 @@ def try_to_get_gnss_time() -> bool:
         return False
     try:
         with open(GNSS_PATH) as f:
-            gnss_time_ms = int(f.readline())
-        gnss_time = datetime.datetime.fromtimestamp(gnss_time_ms / 1000)
-        gnss_offset = gnss_time - datetime.datetime.now()
-        print('time', gnss_time, gnss_offset)
+            gnss_offset_ms = int(f.readline())
+        gnss_offset = datetime.timedelta(milliseconds=gnss_offset_ms)
+        print('time', datetime.datetime.now() + gnss_offset, gnss_offset)
     except FileNotFoundError:
         print('failed')
         return False
