@@ -13,7 +13,7 @@ from collections import deque
 
 USB_MOUNT_PATH = Path('/media/usb0')
 RECORDING_PATH = USB_MOUNT_PATH / 'recording'
-
+GNSS_PATH = Path('/tmp/gnss_time.txt')
 
 class JpegMemoryControl:
     def __init__(self, min_usb_space: int = 4_000_000_000, max_files: int = 64_000) -> None:
@@ -55,9 +55,12 @@ class JpegMemoryControl:
                 except FileNotFoundError:
                     pass  # File already deleted or usb was removed
 
+        # remove stale gnss_txt in case we lost the lock
+        GNSS_PATH.unlink(missing_ok=True)
+
     def _build_database(self) -> None:
         self.file_queue.clear()
-        sorted_files = sorted((file for file in RECORDING_PATH.glob('**/*.jpg')), key=lambda file: file.stat().st_ctime)
+        sorted_files = sorted((file for file in RECORDING_PATH.glob('**/*.jpg')), key=lambda file: file.stat().st_mtime)
         for file in sorted_files:
             self.file_queue.append(file)
 
@@ -82,7 +85,7 @@ def try_to_get_gnss_time() -> bool:
     if gnss_offset is not None:
         return False
     try:
-        with open('/tmp/gnss_time.txt') as f:
+        with open(GNSS_PATH) as f:
             gnss_time_ms = int(f.readline())
         gnss_time = datetime.datetime.fromtimestamp(gnss_time_ms / 1000)
         gnss_offset = gnss_time - datetime.datetime.now()
