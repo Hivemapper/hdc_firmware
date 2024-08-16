@@ -11,8 +11,6 @@ DATA_LOGGER_GOLANG_BUILD_TARGETS += ./cmd/datalogger
 DATA_LOGGER_GOLANG_INSTALL_BINS += datalogger
 DATA_LOGGER_GOMOD = ./cmd/datalogger
 
-DATA_LOGGER_PRE_BUILD_HOOKS += DATA_LOGGER_CUSTOM_PRE_BUILD
-
 define DATA_LOGGER_INSTALL_TARGET_CMDS
 	$(INSTALL) -D -m 755 $(@D)/bin/data-logger $(TARGET_DIR)/opt/dashcam/bin/datalogger
 endef
