@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-DATA_LOGGER_VERSION = 66a3b555c2a87ef79d34e538e009daeb9d8dec51
+DATA_LOGGER_VERSION = f40c0fd44a27060f63a587ae723561c1cf80434d
 DATA_LOGGER_SITE = https://github.com/Hivemapper/hivemapper-data-logger.git
 DATA_LOGGER_SITE_METHOD = git
 DATA_LOGGER_GOLANG_BUILD_TARGETS += ./cmd/datalogger
