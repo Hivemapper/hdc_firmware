@@ -18,7 +18,7 @@ jobs:
       - name: Download artifact from build
         uses: dawidd6/action-download-artifact@v6
         with:
-          name: firmware
+          name: buildroot-hdc
           workflow: compile_hdc.yml
 
       - run: |
