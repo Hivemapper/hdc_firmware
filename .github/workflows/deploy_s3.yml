@@ -16,11 +16,7 @@ jobs:
       deployments: write
     steps:
       - name: Download artifact from build
-        uses: bettermarks/action-artifact-download@0.3.0
-        with:
-          token: ${{ secrets.CLASSIC_TOKEN }}
-          artifact_name: buildroot-hdc
-          wait_seconds: 30
+        uses: dawidd6/action-download-artifact@v6
 
       - run: |
           ls -al
