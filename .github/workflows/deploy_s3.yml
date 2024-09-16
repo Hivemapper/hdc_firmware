@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Download artifact from build
         uses: dawidd6/action-download-artifact@v6
+        with:
+          name: firmware
+          workflow: compile_hdc.yml
 
       - run: |
           ls -al
