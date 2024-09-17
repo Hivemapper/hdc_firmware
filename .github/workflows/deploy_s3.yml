@@ -25,7 +25,8 @@ jobs:
       - name: Grab version.json
         id: firmware_version_json
         run: |
-          version_json=$(cat tmp/version.json | tr -d '\n')
+          mv tmp/version.json ..
+          version_json=$(cat version.json | tr -d '\n')
           echo "::set-output name=version::$version_json"
 
       - uses: shallwefootball/s3-upload-action@master
