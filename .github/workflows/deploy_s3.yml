@@ -25,7 +25,7 @@ jobs:
       - name: Grab version.json
         id: firmware_version_json
         run: |
-          mv tmp/version.json ..
+          mv tmp/version.json .
           version_json=$(cat version.json | tr -d '\n')
           echo "::set-output name=version::$version_json"
 
