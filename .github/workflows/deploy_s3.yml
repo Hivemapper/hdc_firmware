@@ -11,25 +11,16 @@ on:
 jobs:
   deploy:
     name: Upload Firmware to S3
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       deployments: write
-    steps:
+    steps:          
       - name: Download artifact from build
         uses: dawidd6/action-download-artifact@v6
         with:
           name: buildroot-hdc
           workflow: compile_hdc.yml
-
-      - run: |
-          ls -al
-          rm -f *.raucb
-          rm -f version.json
-          rm -rf tmp/
-          unzip -o buildroot-hdc
-          ls -al 
-          mkdir tmp
-          mv -f *.raucb tmp/
+          path: tmp
 
       - name: Grab version.json
         id: firmware_version_json
