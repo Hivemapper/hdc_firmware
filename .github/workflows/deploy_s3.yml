@@ -11,30 +11,21 @@ on:
 jobs:
   deploy:
     name: Upload Firmware to S3
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     permissions:
       deployments: write
     steps:
       - name: Download artifact from build
-        uses: bettermarks/action-artifact-download@0.3.0
+        uses: dawidd6/action-download-artifact@v6
         with:
-          token: ${{ secrets.CLASSIC_TOKEN }}
-          artifact_name: buildroot-hdc
-          wait_seconds: 30
-
-      - run: |
-          ls -al
-          rm -f *.raucb
-          rm -f version.json
-          rm -rf tmp/
-          unzip -o buildroot-hdc
-          ls -al 
-          mkdir tmp
-          mv -f *.raucb tmp/
+          name: buildroot-hdc
+          workflow: compile_hdc.yml
+          path: tmp
 
       - name: Grab version.json
         id: firmware_version_json
         run: |
+          mv tmp/version.json .
           version_json=$(cat version.json | tr -d '\n')
           echo "::set-output name=version::$version_json"
 
