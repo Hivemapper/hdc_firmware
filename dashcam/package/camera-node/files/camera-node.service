@@ -12,7 +12,7 @@ Restart=always
 StandardOutput=append:/mnt/data/camera-node.log
 StandardError=append:/mnt/data/camera-node.log
 
-Environment="ODC_VERSION=4.9.4"
+Environment="ODC_VERSION=4.9.6"
 
 [Install]
 WantedBy=multi-user.target
