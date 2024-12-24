@@ -334,26 +334,33 @@ def main():
   print(config)
 
   def worker():
-    single_model = interpreter.Interpreter(config["PrivacyModelPath"])
-    single_model_hash = config["PrivacyModelHash"]
-    single_model.allocate_tensors()
-    single_input_details = single_model.get_input_details()
-    single_output_details = single_model.get_output_details()
+    try: 
+      single_model = interpreter.Interpreter(config["PrivacyModelPath"])
+      single_model_hash = config["PrivacyModelHash"]
+      single_model.allocate_tensors()
+      single_input_details = single_model.get_input_details()
+      single_output_details = single_model.get_output_details()
 
-    grid_model = interpreter.Interpreter(config["PrivacyModelGridPath"])
-    grid_model_hash = config["PrivacyModelGridHash"]
-    grid_model.allocate_tensors()
-    grid_input_details = grid_model.get_input_details()
-    grid_output_details = grid_model.get_output_details()
+      grid_model = interpreter.Interpreter(config["PrivacyModelGridPath"])
+      grid_model_hash = config["PrivacyModelGridHash"]
+      grid_model.allocate_tensors()
+      grid_input_details = grid_model.get_input_details()
+      grid_output_details = grid_model.get_output_details()
 
-    errors_counter = 0
+      errors_counter = 0
 
-    conf_threshold = config.get("PrivacyConfThreshold", 0.2)
-    nms_threshold = config.get("PrivacyNmsThreshold", 0.8)
-    scale_config = config.get("ScaleBoundingBox", {})
+      conf_threshold = config.get("PrivacyConfThreshold", 0.2)
+      nms_threshold = config.get("PrivacyNmsThreshold", 0.8)
+      scale_config = config.get("ScaleBoundingBox", {})
+    except Exception as e:
+          # If we can't initialize the model(s), it's fatal for the entire process:
+          print(f"[FATAL] Worker failed model init: {e}")
+          # Force-kill the entire script with code 1:
+          os._exit(1)
 
     while True:
       images = q.get()
+      print("worker is alive")
 
       try:
         if len(images) > 0:
