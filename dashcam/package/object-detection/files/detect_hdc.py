@@ -335,13 +335,13 @@ def main():
 
   def worker():
     try: 
-      single_model = interpreter.Interpreter(config["PrivacyModelPath"])
+      single_model = interpreter.Interpreter(config.get("PrivacyModelPath", "/opt/dashcam/bin/n800_1x2_float16.tflite"))
       single_model_hash = config["PrivacyModelHash"]
       single_model.allocate_tensors()
       single_input_details = single_model.get_input_details()
       single_output_details = single_model.get_output_details()
 
-      grid_model = interpreter.Interpreter(config["PrivacyModelGridPath"])
+      grid_model = interpreter.Interpreter(config.get("PrivacyModelGridPath", "/opt/dashcam/bin/n800_2x2_float16.tflite"))
       grid_model_hash = config["PrivacyModelGridHash"]
       grid_model.allocate_tensors()
       grid_input_details = grid_model.get_input_details()
