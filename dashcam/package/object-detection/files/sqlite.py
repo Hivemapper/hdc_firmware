@@ -124,7 +124,8 @@ class SQLite:
                                 elif isinstance(default_value, (dict, list)):
                                     config[key] = json.loads(value)
                                 else:
-                                    config[key] = str(value).strip('"')
+                                    cleaned = str(value).strip().strip('"').strip("'")
+                                    config[key] = cleaned
                     except Exception as e:
                         print(e)
         except Exception as e:

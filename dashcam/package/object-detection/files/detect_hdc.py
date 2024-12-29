@@ -334,14 +334,25 @@ def main():
   print(config)
 
   def worker():
-    try: 
-      single_model = interpreter.Interpreter(config.get("PrivacyModelPath", "/opt/dashcam/bin/n800_1x2_float16.tflite"))
+    try:
+      single_model_path = config.get("PrivacyModelPath", "/opt/dashcam/bin/n800_1x2_float16.tflite")
+      grid_model_path   = config.get("PrivacyModelGridPath", "/opt/dashcam/bin/n800_2x2_float16.tflite")
+
+      if not os.path.isfile(single_model_path):
+        print(f"[WARN] Invalid single model path: {single_model_path}. Falling back to default.")
+        single_model_path = "/opt/dashcam/bin/n800_1x2_float16.tflite"
+
+      if not os.path.isfile(grid_model_path):
+        print(f"[WARN] Invalid grid model path: {grid_model_path}. Falling back to default.")
+        grid_model_path = "/opt/dashcam/bin/n800_2x2_float16.tflite"
+
+      single_model = interpreter.Interpreter(single_model_path)
       single_model_hash = config["PrivacyModelHash"]
       single_model.allocate_tensors()
       single_input_details = single_model.get_input_details()
       single_output_details = single_model.get_output_details()
 
-      grid_model = interpreter.Interpreter(config.get("PrivacyModelGridPath", "/opt/dashcam/bin/n800_2x2_float16.tflite"))
+      grid_model = interpreter.Interpreter(grid_model_path)
       grid_model_hash = config["PrivacyModelGridHash"]
       grid_model.allocate_tensors()
       grid_input_details = grid_model.get_input_details()
