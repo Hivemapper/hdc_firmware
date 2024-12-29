@@ -2,6 +2,33 @@ import sqlite3
 import json
 from datetime import datetime
 from decimal import Decimal
+import time
+
+def retry_with_backoff(
+    retries=3,
+    backoff=2,
+    exceptions=(sqlite3.DatabaseError, sqlite3.OperationalError)
+):
+    import functools
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            delay = 1
+            for attempt in range(retries):
+                try:
+                    return func(*args, **kwargs)
+                except exceptions as e:
+                    print(
+                        f"[{func.__name__}] Attempt {attempt+1}/{retries} failed "
+                        f"with DB error: {e}"
+                    )
+                    if attempt == retries - 1:
+                        raise
+                    time.sleep(delay)
+                    delay *= backoff
+        return wrapper
+    return decorator
 
 class SQLite:
     def __init__(self, db_name):
@@ -20,18 +47,21 @@ class SQLite:
             else:
                 print("Database already in WAL mode.")
 
+    @retry_with_backoff(retries=3, backoff=2)
     def get_frames_for_ml(self, limit=10):
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT value FROM config WHERE key = "isDashcamMLEnabled"')
-            is_enabled = cursor.fetchone()
-            if is_enabled and len(is_enabled) and is_enabled[0] == 'false':
-                return [], 0
+            # There's no case when processing / ML is disabled
+            # Uncomment if you need this logic back
+            # cursor.execute('SELECT value FROM config WHERE key = "isDashcamMLEnabled"')
+            # is_enabled = cursor.fetchone()
+            # if is_enabled and len(is_enabled) and is_enabled[0] == 'false':
+            #     return [], 0
             
-            cursor.execute('SELECT value FROM config WHERE key = "isProcessingEnabled"')
-            is_enabled = cursor.fetchone()
-            if is_enabled and len(is_enabled) and is_enabled[0] == 'false':
-                return [], 0
+            # cursor.execute('SELECT value FROM config WHERE key = "isProcessingEnabled"')
+            # is_enabled = cursor.fetchone()
+            # if is_enabled and len(is_enabled) and is_enabled[0] == 'false':
+            #     return [], 0
             
             cursor.execute('SELECT fkm_id FROM framekms WHERE ml_model_hash is NULL AND (error is NULL OR error = "")  AND postponed != 1 ORDER BY time LIMIT 1')
             min_framekm_id_result = cursor.fetchone()
@@ -61,6 +91,7 @@ class SQLite:
 
             return images, total[0][0]
         
+    @retry_with_backoff(retries=3, backoff=2)
     def get_privacy_config(self):
         default_values = {
             'PrivacyModelPath': '/opt/dashcam/bin/n800_1x2_float16.tflite',
@@ -70,27 +101,35 @@ class SQLite:
             'LowSpeedThreshold': 17,
             'PrivacyConfThreshold': 0.2,
             'PrivacyNmsThreshold': 0.8,
-            'PrivacyNumThreads': 3
+            'PrivacyNumThreads': 3,
+            'ScaleBoundingBox': {},
         }
         config = default_values.copy()
 
-        # try:
-        #     with self.get_connection() as conn:
-        #         cursor = conn.cursor()
-        #         for key, default_value in default_values.items():
-        #             cursor.execute('SELECT value FROM config WHERE key = ?', (key,))
-        #             result = cursor.fetchone()
-        #             if result:
-        #                 value = result[0]
-        #                 # Convert to appropriate type based on default value
-        #                 if isinstance(default_value, float):
-        #                     config[key] = float(value)
-        #                 elif isinstance(default_value, int):
-        #                     config[key] = int(value)
-        #                 else:
-        #                     config[key] = str(value).strip('"')
-        # except Exception as e:
-        #     print(e)
+        try:
+            with self.get_connection() as conn:
+                cursor = conn.cursor()
+                for key, default_value in default_values.items():
+                    cursor.execute('SELECT value FROM config WHERE key = ?', (key,))
+                    result = cursor.fetchone()
+                    try:
+                        if result:
+                            value = result[0]
+                            if value:
+                                # Convert to appropriate type based on default value
+                                if isinstance(default_value, float):
+                                    config[key] = float(value)
+                                elif isinstance(default_value, int):
+                                    config[key] = int(value)
+                                elif isinstance(default_value, (dict, list)):
+                                    config[key] = json.loads(value)
+                                else:
+                                    cleaned = str(value).strip().strip('"').strip("'")
+                                    config[key] = cleaned
+                    except Exception as e:
+                        print(e)
+        except Exception as e:
+            print(e)
         return config
 
     def set_error(self, image_name, error):
@@ -99,6 +138,7 @@ class SQLite:
             cursor.execute('UPDATE framekms SET error=? WHERE image_name=?', (error, image_name))
             conn.commit()
 
+    @retry_with_backoff(retries=3, backoff=2)
     def set_frame_ml(self, image_name, ml_model_hash, ml_detections, metrics = {}):
         with self.get_connection() as conn:
             cursor = conn.cursor()
@@ -130,6 +170,7 @@ class SQLite:
             cursor.execute('INSERT INTO error_logs (message, service_name, system_time) VALUES (?, ?, ?)', (str(error), "object-detection", now.strftime("%Y-%m-%d %H:%M:%S.00000")))
             conn.commit()
 
+    @retry_with_backoff(retries=3, backoff=2)
     def set_service_status(self, status, service_name = 'object-detection'):
         with self.get_connection() as conn:
             cursor = conn.cursor()

@@ -79,7 +79,14 @@ def combine_images(images, grid_size, model_size):
 
     return combined_img, orig_images
 
-def transform_box(box, model_size, grid_size, index):
+CLASS_NAMES = ['face', 'person', 'license-plate', 'car', 'bus', 'truck', 'motorcycle', 'bicycle']
+
+def get_label(class_id):
+    if 0 <= class_id < len(CLASS_NAMES):
+        return CLASS_NAMES[class_id]
+    return None
+
+def transform_box(box, model_size, grid_size, index, scale_config, class_id):
     # Determine cell dimensions based on grid size
     if grid_size == 1:  # 1x2 grid
         cell_width = model_size
@@ -102,6 +109,27 @@ def transform_box(box, model_size, grid_size, index):
         (box[2] - w_offset) * scale_w,
         (box[3] - h_offset) * scale_h
     ]
+
+    # Scale the box
+    object_class = get_label(class_id)
+    scale = scale_config.get(object_class, 1.0) if object_class else 1.0
+
+    if scale < 1.0 and isinstance(scale, (int, float)):
+      box_center_x = (new_box[0] + new_box[2]) / 2
+      box_center_y = (new_box[1] + new_box[3]) / 2
+
+      box_width = new_box[2] - new_box[0]
+      box_height = new_box[3] - new_box[1]
+
+      scaled_width = box_width * scale
+      scaled_height = box_height * scale
+
+      new_box = [
+          box_center_x - scaled_width / 2,
+          box_center_y - scaled_height / 2,
+          box_center_x + scaled_width / 2,
+          box_center_y + scaled_height / 2
+      ]
 
     # Clipping the coordinates to make sure they are within image boundaries
     new_box[::2] = np.clip(new_box[::2], 0, width)
@@ -135,7 +163,7 @@ def rotate_boxes(boxes):
         rotated_boxes.append(np.array([width - box[2], height - box[3], width - box[0], height - box[1]]))
     return rotated_boxes
 
-def detect(images, model, input_details, output_details, conf_threshold, nms_threshold, sqlite, model_hash):
+def detect(images, model, input_details, output_details, conf_threshold, nms_threshold, sqlite, model_hash, scale_config):
     metrics = {}
     #map images to set
     unprocessed_images = set(image[0] for image in images)
@@ -198,7 +226,7 @@ def detect(images, model, input_details, output_details, conf_threshold, nms_thr
       for box, score, class_id in zip(boxes, scores, class_ids):
           image_index = determine_image_index(box, model_size, grid_size)
 
-          box = transform_box(box, model_size, grid_size, image_index)
+          box = transform_box(box, model_size, grid_size, image_index, scale_config, class_id)
 
           # filter out large boxes and boxes on the hood
           if (box[2] - box[0] > 0.8 * width and box[1] > 0.5 * height):
@@ -306,24 +334,44 @@ def main():
   print(config)
 
   def worker():
-    single_model = interpreter.Interpreter(config["PrivacyModelPath"])
-    single_model_hash = config["PrivacyModelHash"]
-    single_model.allocate_tensors()
-    single_input_details = single_model.get_input_details()
-    single_output_details = single_model.get_output_details()
+    try:
+      single_model_path = config.get("PrivacyModelPath", "/opt/dashcam/bin/n800_1x2_float16.tflite")
+      grid_model_path   = config.get("PrivacyModelGridPath", "/opt/dashcam/bin/n800_2x2_float16.tflite")
 
-    grid_model = interpreter.Interpreter(config["PrivacyModelGridPath"])
-    grid_model_hash = config["PrivacyModelGridHash"]
-    grid_model.allocate_tensors()
-    grid_input_details = grid_model.get_input_details()
-    grid_output_details = grid_model.get_output_details()
+      if not os.path.isfile(single_model_path):
+        print(f"[WARN] Invalid single model path: {single_model_path}. Falling back to default.")
+        single_model_path = "/opt/dashcam/bin/n800_1x2_float16.tflite"
 
-    errors_counter = 0
-    conf_threshold = config["PrivacyConfThreshold"]
-    nms_threshold = config["PrivacyNmsThreshold"]
+      if not os.path.isfile(grid_model_path):
+        print(f"[WARN] Invalid grid model path: {grid_model_path}. Falling back to default.")
+        grid_model_path = "/opt/dashcam/bin/n800_2x2_float16.tflite"
+
+      single_model = interpreter.Interpreter(single_model_path)
+      single_model_hash = config["PrivacyModelHash"]
+      single_model.allocate_tensors()
+      single_input_details = single_model.get_input_details()
+      single_output_details = single_model.get_output_details()
+
+      grid_model = interpreter.Interpreter(grid_model_path)
+      grid_model_hash = config["PrivacyModelGridHash"]
+      grid_model.allocate_tensors()
+      grid_input_details = grid_model.get_input_details()
+      grid_output_details = grid_model.get_output_details()
+
+      errors_counter = 0
+
+      conf_threshold = config.get("PrivacyConfThreshold", 0.2)
+      nms_threshold = config.get("PrivacyNmsThreshold", 0.8)
+      scale_config = config.get("ScaleBoundingBox", {})
+    except Exception as e:
+          # If we can't initialize the model(s), it's fatal for the entire process:
+          print(f"[FATAL] Worker failed model init: {e}")
+          # Force-kill the entire script with code 1:
+          os._exit(1)
 
     while True:
       images = q.get()
+      print("worker is alive")
 
       try:
         if len(images) > 0:
@@ -339,7 +387,7 @@ def main():
           output_details = grid_output_details if is_grid else single_output_details
           conf = conf_threshold - 0.05 if is_grid else conf_threshold
 
-          unprocessed_images, error = detect(images, model, input_details, output_details, conf, nms_threshold, sqlite, model_hash)
+          unprocessed_images, error = detect(images, model, input_details, output_details, conf, nms_threshold, sqlite, model_hash, scale_config)
           for image in enumerate(images):
             image_name = image[0]
             if image_name in unprocessed_images:
